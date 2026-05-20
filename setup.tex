@@ -1,0 +1,456 @@
+% !TEX root = ./main.tex
+
+\sjtusetup{
+  %
+  %******************************
+  % 注意：
+  %   1. 配置里面不要出现空行
+  %   2. 不需要的配置信息可以删除
+  %******************************
+  %
+  % 信息录入
+  %
+  info = {%
+    %
+    % 标题
+    %
+    zh / title           = {西南财经大学学位论文 \LaTeX{} 模板示例文档},
+    en / title           = {A Sample Document for \LaTeX-based SWUFE Thesis Template},
+    %
+    % 标题页标题
+    %   可使用“\\”命令手动控制换行
+    %
+    % zh / display-title   = {上海交通大学学位论文\\ \LaTeX{} 模板示例文档},
+    % en / display-title   = {A Sample Document \\ for \LaTeX-based SJTU Thesis Template},
+    %
+    % 关键词
+    %
+    zh / keywords        = {西南财经大学；历史沿革；211工程},
+    en / keywords        = {SWUFE; LaTeX; Python },
+    %
+    % 姓名
+    %
+    zh / author          = {某\quad{}某},
+    en / author          = {Mo Mo},
+    %
+    % 指导教师
+    %
+    zh / supervisor      = {某某教授},
+    en / supervisor      = {Prof.\ Mou Mou},
+    %
+    % 副指导教师
+    %
+    % zh / assoc-supervisor  = {某某教授},
+    % en / assoc-supervisor  = {Prof.\ Uom Uom},
+    %
+    % 学号
+    %
+    id              = {0010900990},
+    %
+    % 学位
+    %   本科生不需要填写
+    %
+    zh / degree          = {工学硕士},
+    en / degree          = {Master of Engineering},
+    %
+    % 专业
+    %
+    zh / major           = {某某专业},
+    en / major           = {A Very Important Major},
+    %
+    % 所属院系
+    %
+    zh / department      = {某某系},
+    en / department      = {Depart of XXX},
+    %
+    % 答辩日期
+    %   使用 ISO 格式 (yyyy-mm-dd)；默认为当前时间
+    %
+    % date                 = {2023-05-18},
+    %
+    % 标题页显示日期
+    %   覆盖对应标题页的日期显示，原样输出
+    %
+    % zh / display-date    = {2023 年 5 月},
+    %
+    % 资助基金
+    %
+    % zh / fund  = {
+    %                {国家 973 项目 (No.\ 2025CB000000)},
+    %                {国家自然科学基金 (No.\ 81120250000)},
+    %              },
+    % en / fund  = {
+    %                {National Basic Research Program of China (Grant No.\ 2025CB000000)},
+    %                {National Natural Science Foundation of China (Grant No.\ 81120250000)},
+    %              },
+  },
+  %
+  % 风格设置
+  %
+  style = {%
+    %
+    % 关键词首行悬挂
+    %
+    % keywords-format = hang,
+  },
+  %
+  % 名称设置
+  %
+  name = {
+    % bib             = {References},
+    % ack             = {谢\hspace{\ccwd}辞},
+    % achv            = {攻读学位期间完成的论文},
+  },
+}
+
+% 使用 BibLaTeX 处理参考文献
+%   biblatex-gb7714-2015 常用选项
+%     gbnamefmt=lowercase     姓名大小写由输入信息确定
+%     gbpub=false             禁用出版信息缺失处理
+
+% \usepackage[backend=biber,style=gb7714-2015]{biblatex}
+% % 文献表字体
+% \renewcommand{\bibfont}{\zihao{5}\setbaselineskip{16bp}}
+% % 文献表条目间的间距
+% \setlength{\bibitemsep}{3bp plus 1pt}
+% % 导入参考文献数据库
+% \addbibresource{refs.bib}
+
+% \usepackage[backend=biber,style=gb7714-2015]{biblatex}
+
+\usepackage[super,square]{natbib}
+% 脚注格式
+\usepackage[perpage,bottom,hang]{footmisc}
+
+% 定义图片文件目录与扩展名
+\graphicspath{{figures/}}
+\DeclareGraphicsExtensions{.pdf,.eps,.png,.jpg,.jpeg}
+
+% 确定浮动对象的位置，可以使用 [H]，强制将浮动对象放到这里（可能效果很差）
+% \usepackage{float}
+
+% 固定宽度的表格
+% \usepackage{tabularx}
+
+% 使用三线表：toprule，midrule，bottomrule。
+\usepackage{booktabs}
+
+% 表格中支持跨行
+\usepackage{multirow}
+
+% 表格中数字按小数点对齐
+\usepackage{dcolumn}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+
+% 使用长表格
+\usepackage{longtable}
+
+% 附带脚注的表格
+\usepackage{threeparttable}
+
+% 附带脚注的长表格
+\usepackage{threeparttablex}
+
+% 算法环境宏包
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+% \usepackage{algorithm, algorithmicx, algpseudocode}
+
+% 代码环境宏包
+\usepackage{listings}
+\lstdefinestyle{lstStyleCode}{%
+  aboveskip         = \medskipamount,
+  belowskip         = \medskipamount,
+  basicstyle        = \ttfamily\zihao{-5}\setbaselineskip{12bp},
+  commentstyle      = \slshape\color{black!60},
+  stringstyle       = \color{green!40!black!100},
+  keywordstyle      = \bfseries\color{blue!50!black},
+  extendedchars     = false,
+  upquote           = true,
+  tabsize           = 2,
+  showstringspaces  = false,
+  xleftmargin       = 1em,
+  xrightmargin      = 1em,
+  breaklines        = false,
+  framexleftmargin  = 1em,
+  framexrightmargin = 1em,
+  backgroundcolor   = \color{gray!10},
+  columns           = flexible,
+  keepspaces        = true,
+  texcl             = true,
+  mathescape        = true
+}
+\lstnewenvironment{codeblock}[1][]{%
+  \lstset{style=lstStyleCode,#1}}{}
+
+% 直立体数学符号
+\providecommand{\dd}{\mathop{}\!\mathrm{d}}
+\providecommand{\ee}{\mathrm{e}}
+\providecommand{\ii}{\mathrm{i}}
+\providecommand{\jj}{\mathrm{j}}
+
+% 国际单位制宏包
+\usepackage{siunitx}
+
+% 定理环境宏包
+\usepackage{amsthm}
+% \usepackage{ntheorem}
+
+% 绘图宏包
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, shapes.geometric}
+\usepackage{tabularx}
+
+% 封面环境：用户在 contents/封面*.tex 中填写字段，版式统一在这里维护。
+\definecolor{CoverGreen}{RGB}{210, 250, 180}
+
+\makeatletter
+\newcommand{\swufe@coverone@defaults}{%
+  \def\swufe@coverone@zhtitle{你的论文标题标题标题}%
+  \def\swufe@coverone@entitle{This is Title This is Title This is Title This is Title This is Title This is Title This is Title This is Title}%
+  \def\swufe@coverone@applicant{}%
+  \def\swufe@coverone@supervisor{}%
+  \def\swufe@coverone@major{计算机科学与技术}%
+  \def\swufe@coverone@degree{工学硕士}%
+}
+
+\pgfkeys{
+  /swufe/coverone/.is family,
+  /swufe/coverone,
+  zh-title/.store in=\swufe@coverone@zhtitle,
+  en-title/.store in=\swufe@coverone@entitle,
+  applicant/.store in=\swufe@coverone@applicant,
+  supervisor/.store in=\swufe@coverone@supervisor,
+  major/.store in=\swufe@coverone@major,
+  degree/.store in=\swufe@coverone@degree,
+}
+
+\newenvironment{swufecoverone}[1][]{%
+  \begingroup
+  \swufe@coverone@defaults
+  \pgfkeys{/swufe/coverone/.cd,#1}%
+  \thispagestyle{empty}%
+  \begin{titlepage}
+    % 1. 全页背景色填充（必须放在 titlepage 的最开头，作为最底层）
+    \tikz[remember picture, overlay] \fill[CoverGreen] (current page.south west) rectangle (current page.north east);
+
+    % 2. 左上角校徽定位（叠在背景之上）
+    \tikz[remember picture, overlay]
+        \node[anchor=north west, xshift=2cm, yshift=-2cm] at (current page.north west) {
+            \includegraphics[width=10cm]{figures/swufefull.pdf}
+        };
+
+    \begin{center}
+        \vspace*{1.5cm}
+
+        \vspace{2.5cm}
+
+        \includegraphics[width=12cm]{figures/swufethesis-thesistitle-master.pdf}
+
+        \vspace{2.5cm}
+
+        {\heiti\zihao{2} \swufe@coverone@zhtitle \par}
+        \vspace{0.5cm}
+        {\sffamily\zihao{-3} \swufe@coverone@entitle \par}
+
+        \vfill
+
+        % 底部信息对齐栏
+        {\heiti\zihao{4}
+        \renewcommand{\arraystretch}{1.8}
+        \begin{tabular}{lc}
+            \makebox[5.5em][s]{学位申请人}: & \underline{\makebox[7cm]{\swufe@coverone@applicant}} \\
+            \makebox[5.5em][s]{指导教师}: & \underline{\makebox[7cm]{\swufe@coverone@supervisor}} \\
+            \makebox[5.5em][s]{学科专业}: & \underline{\makebox[7cm]{\swufe@coverone@major}} \\
+            \makebox[5.5em][s]{学位类别}: & \underline{\makebox[7cm]{\swufe@coverone@degree}} \\
+        \end{tabular}
+        \par}
+
+        \vspace{2.5cm}
+    \end{center}
+}{%
+  \end{titlepage}%
+  \endgroup
+}
+
+\newcommand{\swufe@covertwo@defaults}{%
+  \def\swufe@covertwo@classification{}%
+  \def\swufe@covertwo@secretlevel{}%
+  \def\swufe@covertwo@udc{}%
+  \def\swufe@covertwo@zhtitle{你的标题你的标题你的标题你的标题你的标题}%
+  \def\swufe@covertwo@entitle{This is Title This is Title This is Title This is Title This is Title This is Title}%
+  \def\swufe@covertwo@applicant{}%
+  \def\swufe@covertwo@studentid{}%
+  \def\swufe@covertwo@major{计算机科学与技术}%
+  \def\swufe@covertwo@researchdirection{大模型}%
+  \def\swufe@covertwo@supervisor{}%
+  \def\swufe@covertwo@finaldate{2026年3月}%
+}
+
+\pgfkeys{
+  /swufe/covertwo/.is family,
+  /swufe/covertwo,
+  classification/.store in=\swufe@covertwo@classification,
+  secret-level/.store in=\swufe@covertwo@secretlevel,
+  udc/.store in=\swufe@covertwo@udc,
+  zh-title/.store in=\swufe@covertwo@zhtitle,
+  en-title/.store in=\swufe@covertwo@entitle,
+  applicant/.store in=\swufe@covertwo@applicant,
+  student-id/.store in=\swufe@covertwo@studentid,
+  major/.store in=\swufe@covertwo@major,
+  research-direction/.store in=\swufe@covertwo@researchdirection,
+  supervisor/.store in=\swufe@covertwo@supervisor,
+  final-date/.store in=\swufe@covertwo@finaldate,
+}
+
+\newenvironment{swufecovertwo}[1][]{%
+  \begingroup
+  \swufe@covertwo@defaults
+  \pgfkeys{/swufe/covertwo/.cd,#1}%
+  \thispagestyle{empty}%
+  \begin{titlepage}
+    % 顶部档案信息区：五号 (10.5pt)
+    {\zihao{5}
+    \noindent
+    {\heiti 分类号}\ \underline{\makebox[5.5cm]{\swufe@covertwo@classification}} \hfill {\heiti 密级}\ \underline{\makebox[4.5cm]{\swufe@covertwo@secretlevel}} \par
+
+    \vspace{0.4cm}
+
+    % 第二行：利用 tabularx 自动计算剩余宽度，使 U.D.C 的下划线右端与上方密级完全齐平
+    \noindent
+    \begin{tabularx}{\textwidth}{@{}l@{\ }X@{}}
+        U.D.C & \underline{\makebox[\hsize]{\swufe@covertwo@udc}}
+    \end{tabularx}\par}
+
+    \vspace{3.5cm}
+
+    \begin{center}
+        % 中文题目：小2号 (18pt)，华文中宋
+        {\zhongsong\zihao{-2} \swufe@covertwo@zhtitle \par}
+
+        \vspace{0.8cm}
+
+        % 英文题目：小4号 (12pt)，Times New Roman
+        {\rmfamily\zihao{-4}\textbf{\swufe@covertwo@entitle} \par}
+
+        \vspace{3.5cm}
+
+        % 底部详细信息填报区
+        {\heiti\zihao{4}
+        \renewcommand{\arraystretch}{1.8}
+        \begin{tabular}{lc}
+            \makebox[5.5em][s]{学位申请人}: & \underline{\makebox[6cm]{\swufe@covertwo@applicant}} \\
+            \makebox[5.5em][s]{学号}: & \underline{\makebox[6cm]{\swufe@covertwo@studentid}} \\
+            \makebox[5.5em][s]{学科专业}: & \underline{\makebox[6cm]{\swufe@covertwo@major}} \\
+            \makebox[5.5em][s]{研究方向}: & \underline{\makebox[6cm]{\swufe@covertwo@researchdirection}} \\
+            \makebox[5.5em][s]{指导教师}: & \underline{\makebox[6cm]{\swufe@covertwo@supervisor}} \\
+            \makebox[5.5em][s]{定稿时间}: & \underline{\makebox[6cm]{\swufe@covertwo@finaldate}} \\
+        \end{tabular}
+        \par}
+    \end{center}
+}{%
+  \end{titlepage}%
+  \endgroup
+}
+\makeatother
+
+% 在读期间科研成果目录环境：成果内容在 contents/在校成果.tex 中填写。
+\newcounter{achcnt}
+
+\newcommand{\achievement}[4]{%
+  \stepcounter{achcnt}%
+  \centering\theachcnt &
+  #1 &
+  \centering #2 &
+  \centering #3 &
+  \centering\arraybackslash #4 \\[4pt]
+  \hline
+}
+
+\newcommand{\achievementempty}{%
+  & & & & \\[40pt]
+  \hline
+}
+
+\newenvironment{achievementlist}{%
+  \setcounter{achcnt}{0}%
+  \fontsize{10.5pt}{15pt}\selectfont
+  \noindent
+  \tabularx{\textwidth}{|p{1.2cm}|X|p{3.0cm}|p{2.2cm}|p{2.0cm}|}
+    \hline
+    \multicolumn{5}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{%
+      在读期间科研成果目录（在读期间已发表的专著、论文、课题、教材、工具书等）%
+      \vspace{0.4em}%
+    } \\
+    \hline
+    \centering 序号 &
+    \centering 题目 &
+    \centering 刊物或出版社 &
+    \centering 排名情况 &
+    \centering\arraybackslash 备注 \\
+    \hline
+}{%
+  \endtabularx
+}
+
+% 数据图表宏包
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+
+\setCJKfamilyfont{zhongsong}[Path=font/]{STZHONGS.TTF}
+\newcommand{\zhongsong}{\CJKfamily{zhongsong}}
+
+% 一些文档中用到的 logo
+\usepackage{hologo}
+\providecommand{\XeTeX}{\hologo{XeTeX}}
+\providecommand{\BibLaTeX}{\textsc{Bib}\LaTeX}
+
+% 借用 ltxdoc 里面的几个命令方便写文档
+\DeclareRobustCommand\cs[1]{\texttt{\char`\\#1}}
+\providecommand\pkg[1]{{\sffamily#1}}
+
+% hyperref 宏包在最后调用
+\usepackage{hyperref}
+
+% \usepackage[super,square]{natbib}
+
+% \usepackage{float}
+% \usepackage{caption}
+% E-mail
+\providecommand{\email}[1]{\href{mailto:#1}{\urlstyle{tt}\nolinkurl{#1}}}
+
+
+\makeatletter
+
+% 1. 章节页不要用模板默认的空页眉
+\ctexset{
+  chapter = {
+    pagestyle = fancy
+  }
+}
+
+% 2. 重新定义章节页眉内容
+\renewcommand{\chaptermark}[1]{%
+  \markboth{\arabic{chapter}.#1}{}}
+
+% 3. 清空模板原有页眉页脚
+\fancyhf{}
+
+% 4. 偶数页：论文题目
+\fancyhead[LE]{\zihao{-5}\songti 你的标题你的标题你的标题}
+
+% 5. 奇数页：章节名
+\fancyhead[RO]{\zihao{-5}\songti \leftmark}
+
+% 6. 页码
+\fancyfoot[C]{\zihao{-5}\thepage}
+
+% 7. 改成单线页眉（覆盖模板双线）
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\headrule}{\hrule height 0.4pt width\headwidth}
+
+% 8. 章节首页也强制用同样样式
+\let\ps@plain\ps@fancy
+\let\ps@headings\ps@fancy
+
+\makeatother
+\pagestyle{fancy}

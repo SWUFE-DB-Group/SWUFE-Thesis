@@ -1,0 +1,220 @@
+% !TeX encoding = UTF-8
+
+% 载入 SJTUThesis 模版
+\documentclass[type=master, openany, oneside]{sjtuthesis}
+% 选项
+%   type=[doctor|master|bachelor],     % 可选（默认：master），论文类型
+%   zihao=[-4|5],                      % 可选（默认：-4），正文字号大小
+%   lang=[zh|en|de|ja],                % 可选（默认：zh），论文的主要语言
+%   review,                            % 可选（默认：关闭），盲审模式
+%   [twoside|oneside],                 % 可选（默认：twoside），双页或单页边距模式
+%   [openright|openany],               % 可选（默认：openright），奇数页或任意页开始新章
+%   math-style=[ISO|TeX],              % 可选 (默认：ISO)，数学符号样式
+
+
+% % \setbaselineskip{16.5pt}
+% \setbaselineskip{18.5pt}
+
+
+
+% 论文基本配置，加载宏包等全局配置
+\input{setup}
+
+
+
+
+\usepackage{pdfpages}
+\let\cleardoublepage\clearpage
+
+
+\usepackage{setspace}
+\AtBeginDocument{\setstretch{1.37}}
+\AtBeginEnvironment{thebibliography}{\singlespacing}
+% \AtBeginEnvironment{thebibliography}{\setstretch{0.8}}
+
+
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{promptbox}{
+    colback=green!10,      % 背景色（浅绿色）
+    colframe=green!50!black, % 边框颜色
+    boxrule=0.8pt,         % 边框粗细
+    arc=2mm,               % 圆角
+    left=6pt,
+    right=6pt,
+    top=6pt,
+    bottom=6pt
+}
+
+
+
+
+
+
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+
+\makeatletter
+
+
+\renewcommand{\chaptermark}[1]{%
+  \markboth{\arabic{chapter}\ #1}{}}
+
+\fancyhf{}
+
+% oneside 下手动按页码奇偶切换页眉
+\fancyhead[C]{%
+  \zihao{-5}\songti
+  \ifodd\value{page}
+    \leftmark
+  \else
+    你的标题你的标题你的标题
+  \fi
+}
+
+\fancyfoot[C]{\zihao{-5}\thepage}
+
+
+
+% 单线页眉
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\headrule}{\hrule height 0.4pt width\headwidth}
+
+% 章节首页也用 fancy
+\let\ps@plain\ps@fancy
+
+\makeatother
+
+
+
+%----  
+%修改结束
+%----
+
+
+
+\usepackage{fontspec}
+
+
+\setmainfont[
+  Path = font/,
+  UprightFont = {Times New Roman.ttf},
+  BoldFont = {Times New Roman Bold.ttf},
+  ItalicFont = {Times New Roman Italic.ttf},
+  BoldItalicFont = {Times New Roman Bold Italic.ttf}
+]{}
+
+
+
+
+\ctexset{
+  chapter = {
+    name = {},
+    number = \arabic{chapter},
+    format = \centering\heiti\zihao{2},
+    beforeskip = 0pt,
+    afterskip = 20pt,
+    titleformat = \heiti\zihao{2},
+    numberformat = \heiti\zihao{2},
+    aftername = {\ }
+  },
+  section = {
+    format = \heiti\zihao{-3}
+  },
+  subsection = {
+    format = \heiti\zihao{4}
+  }
+}
+
+
+\hypersetup{hidelinks}
+
+
+
+
+\begin{document}
+
+
+
+\pagestyle{fancy}
+
+
+\renewcommand{\thetable}{\arabic{chapter}-\arabic{table}}
+
+
+
+
+
+\renewcommand{\thetable}{\arabic{chapter}-\arabic{table}}
+
+%%%%%%
+\input{contents/封面一}
+\clearpage
+\thispagestyle{empty}
+\cleardoublepage
+
+\input{contents/封面二}
+\clearpage
+
+\input{contents/版权说明}
+\clearpage
+
+\pagenumbering{Roman}
+\pagestyle{fancy}
+%%%%%%
+
+% 摘要
+\input{contents/abstract}
+\thispagestyle{fancy}
+\clearpage
+\pagestyle{fancy}
+
+% 目录
+\tableofcontents*
+\clearpage
+\pagestyle{fancy}
+
+% 主体部分
+\mainmatter
+\pagestyle{fancy}
+
+\input{contents/绪论}
+\clearpage
+\pagestyle{fancy}
+
+\input{contents/相关理论与技术}
+\clearpage
+\pagestyle{fancy}
+
+\input{contents/工作一}
+\clearpage
+\pagestyle{fancy}
+
+\input{contents/工作二}
+\clearpage
+\pagestyle{fancy}
+
+\input{contents/总结与展望}
+\clearpage
+\pagestyle{fancy}
+
+\input{contents/参考文献}
+\clearpage
+\pagestyle{fancy}
+
+\backmatter
+\pagestyle{fancy}
+
+\input{contents/致谢}
+\clearpage
+\pagestyle{fancy}
+
+\input{contents/在校成果}
+\clearpage
+\pagestyle{fancy}
+
+\input{contents/结尾}
+\clearpage
+\pagestyle{fancy}
+
+\end{document}
