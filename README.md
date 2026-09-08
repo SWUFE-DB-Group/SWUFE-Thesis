@@ -46,3 +46,43 @@ make wordcount                # 论文字数统计
 .\Compile.bat cleanall        # 删除 main.pdf 和所有中间文件
 .\Compile.bat wordcount       # 论文字数统计
 ```
+
+## 论文信息配置与模式切换
+
+### 1. 论文信息配置
+
+论文的所有核心信息均在 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex) 的 `\sjtusetup{ info = { ... } }` 中集中配置，**封面一（绿皮外封）、封面二（扉页）以及正文页眉将自动读取该处信息**，无需再在封面文件中重复填写：
+
+- `zh / title`、`en / title`：中英文标题（页眉、PDF 书签与元数据自动同步）
+- `zh / display-title`、`en / display-title`：封面换行标题（可选，支持用 `\\` 手动换行）
+- `zh / author`、`en / author`：作者姓名
+- `zh / supervisor`、`en / supervisor`：指导教师姓名
+- `id`：学号
+- `zh / major`、`zh / degree`：学科专业、学位类别
+- `zh / research-direction`：研究方向（封面二自动读取）
+- `classification`、`secret-level`、`udc`：分类号、密级、UDC（封面二自动读取）
+- `final-date`：定稿时间（封面二自动读取，未填时自动使用当前年月）
+
+### 2. 盲审 / 终稿 模式切换
+
+在 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex) 顶部可一键切换盲审与终稿模式：
+
+```latex
+\sjtusetup{
+  review                  = false, % false 为终稿模式（默认）；true 为盲审模式
+  hide-coverone-in-review = false, % 盲审时是否隐藏封面一（绿皮外封），默认 false（保留匿名横线）
+  ...
+}
+```
+
+*注：亦可在 [main.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/main.tex) 的 `\documentclass[..., review]{sjtuthesis}` 中开启盲审。*
+
+**模式行为差异：**
+
+| 功能项 | 终稿模式 (`review = false`) | 盲审模式 (`review = true`) |
+| :--- | :--- | :--- |
+| **封面一（绿皮外封）** | 显示申请人与导师姓名 | 申请人与导师姓名自动留空（保留下划线横线）；若开启 `hide-coverone-in-review = true` 则直接跳过该页 |
+| **封面二（扉页）** | 显示申请人、学号与导师姓名 | 申请人、学号与导师姓名自动留空（保留下划线横线） |
+| **原创与版权声明页** | 正常输出带签名的声明页 | 自动略过不输出（防止手写签名泄密） |
+| **致谢** | 正常输出 | 自动略过不输出（防止致谢内容泄密） |
+| **页眉与成果目录** | 正常输出 | 页眉自动读取论文标题，成果目录保持规范匿名格式 |

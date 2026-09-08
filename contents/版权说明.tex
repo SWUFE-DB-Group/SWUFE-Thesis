@@ -1,8 +1,14 @@
 
 
-\thispagestyle{empty}
+% !TEX root = ../main.tex
 
-\includepdf[
-  pages=1,
-  pagecommand={}
-]{figures/declaration.pdf}
+\ifswufereview
+  % 盲审模式下不输出版权说明与原创性声明页（避免泄露签名）
+\else
+  \thispagestyle{empty}
+
+  \includepdf[
+    pages=1,
+    pagecommand={}
+  ]{figures/declaration.pdf}
+\fi

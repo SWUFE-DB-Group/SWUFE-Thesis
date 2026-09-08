@@ -1,6 +1,121 @@
 % !TEX root = ./main.tex
 
+% =========================================================
+% 西南财经大学学位论文宏包配置与元数据扩展
+% =========================================================
+\ExplSyntaxOn
+
+% 盲审与封面扩展键值定义
+\bool_new:N \l__swufe_hide_coverone_in_review_bool
+\tl_new:N   \l__swufe_info_classification_tl
+\tl_new:N   \l__swufe_info_secret_level_tl
+\tl_new:N   \l__swufe_info_udc_tl
+\tl_new:N   \l__swufe_info_research_direction_tl
+\tl_new:N   \l__swufe_info_final_date_tl
+
+\keys_define:nn { sjtu }
+  {
+    review                  .bool_gset:N = \g__sjtu_review_bool ,
+    hide-coverone-in-review .bool_set:N  = \l__swufe_hide_coverone_in_review_bool ,
+  }
+
+\keys_define:nn { sjtu / style }
+  {
+    review                  .bool_gset:N = \g__sjtu_review_bool ,
+    hide-coverone-in-review .bool_set:N  = \l__swufe_hide_coverone_in_review_bool ,
+  }
+
+\keys_define:nn { sjtu / info }
+  {
+    classification          .tl_set:N    = \l__swufe_info_classification_tl ,
+    secret-level            .tl_set:N    = \l__swufe_info_secret_level_tl ,
+    udc                     .tl_set:N    = \l__swufe_info_udc_tl ,
+    research-direction      .tl_set:N    = \l__swufe_info_research_direction_tl ,
+    zh / research-direction .tl_set:N    = \l__swufe_info_research_direction_tl ,
+    final-date              .tl_set:N    = \l__swufe_info_final_date_tl ,
+    zh / final-date         .tl_set:N    = \l__swufe_info_final_date_tl ,
+  }
+
+% 别名 \swufesetup
+\cs_set_eq:NN \swufesetup \sjtusetup
+
+% 获取论文基本信息的宏接口
+\cs_new:Npn \swufe_get_display_title_zh:
+  {
+    \tl_if_empty:cTF { l__sjtu_info_display_title_zh_tl }
+      { \tl_use:c { l__sjtu_info_title_zh_tl } }
+      { \tl_use:c { l__sjtu_info_display_title_zh_tl } }
+  }
+\cs_new:Npn \swufe_get_display_title_en:
+  {
+    \tl_if_empty:cTF { l__sjtu_info_display_title_en_tl }
+      { \tl_use:c { l__sjtu_info_title_en_tl } }
+      { \tl_use:c { l__sjtu_info_display_title_en_tl } }
+  }
+
+\newcommand{\swufezhdisplaytitle}{\swufe_get_display_title_zh:}
+\newcommand{\swufeendisplaytitle}{\swufe_get_display_title_en:}
+\newcommand{\swufezhtitle}{\tl_use:c { l__sjtu_info_title_zh_tl }}
+\newcommand{\swufeentitle}{\tl_use:c { l__sjtu_info_title_en_tl }}
+\newcommand{\swufeauthor}{\tl_use:c { l__sjtu_info_author_zh_tl }}
+\newcommand{\swufesupervisor}{\tl_use:c { l__sjtu_info_supervisor_zh_tl }}
+\newcommand{\swufemajor}{\tl_use:c { l__sjtu_info_major_zh_tl }}
+\newcommand{\swufedegree}{\tl_use:c { l__sjtu_info_degree_zh_tl }}
+\newcommand{\swufeid}{\tl_use:c { l__sjtu_info_id_zh_tl }}
+\newcommand{\swufeclassification}{\tl_use:N \l__swufe_info_classification_tl}
+\newcommand{\swufesecretlevel}{\tl_use:N \l__swufe_info_secret_level_tl}
+\newcommand{\swufeudc}{\tl_use:N \l__swufe_info_udc_tl}
+\newcommand{\swuferesearchdirection}{\tl_use:N \l__swufe_info_research_direction_tl}
+\newcommand{\swufefinaldate}{%
+  \tl_if_empty:NTF \l__swufe_info_final_date_tl
+    { \tl_use:c { l__sjtu_info_date_zh_tl } }
+    { \tl_use:N \l__swufe_info_final_date_tl }%
+}
+
+% 盲审与封面一控制的布尔开关 (LaTeX2e 接口)
+\newif\ifswufereview
+\newif\ifswufehidecoverone
+\cs_if_exist:NF \ifreview { \newif\ifreview }
+
+\cs_new_protected:Npn \__swufe_sync_review_status:
+  {
+    \bool_if:NTF \g__sjtu_review_bool
+      {
+        \swufereviewtrue
+        \cs_if_exist:NT \reviewtrue { \reviewtrue }
+        \bool_if:NTF \l__swufe_hide_coverone_in_review_bool
+          { \swufehidecoveronetrue }
+          { \swufehidecoveronefalse }
+      }
+      {
+        \swufereviewfalse
+        \cs_if_exist:NT \reviewfalse { \reviewfalse }
+        \swufehidecoveronefalse
+      }
+  }
+
+\ctex_at_end_preamble:n
+  {
+    \__swufe_sync_review_status:
+  }
+\ExplSyntaxOff
+
 \sjtusetup{
+  %
+  %************************************************************
+  % 论文模式配置：盲审模式 / 终稿模式
+  %   review = false : 终稿模式（默认。显示作者、导师、学号、版权声明、致谢等）
+  %   review = true  : 盲审模式（自动匿名化作者、导师、学号，隐藏版权声明页和致谢）
+  % 也可在 main.tex 的 \documentclass[..., review] 中开启盲审。
+  %************************************************************
+  %
+  review                  = false,
+  %
+  % 盲审模式下是否隐藏封面一（绿皮外封）：
+  %   false (默认) : 保留封面一，但申请人与导师姓名自动留空（下划线横线）
+  %   true         : 盲审时不输出封面一，直接从封面二（内封扉页）开始
+  %
+  hide-coverone-in-review = false,
   %
   %******************************
   % 注意：
@@ -8,7 +123,7 @@
   %   2. 不需要的配置信息可以删除
   %******************************
   %
-  % 信息录入
+  % 信息录入（封面一、封面二及论文全局信息由此统一读取）
   %
   info = {%
     %
@@ -17,11 +132,10 @@
     zh / title           = {西南财经大学学位论文 \LaTeX{} 模板示例文档},
     en / title           = {A Sample Document for \LaTeX-based SWUFE Thesis Template},
     %
-    % 标题页标题
-    %   可使用“\\”命令手动控制换行
+    % 标题页标题（可选。如需在封面上使用“\\”手动控制换行，可取消注释并填写）
     %
-    % zh / display-title   = {上海交通大学学位论文\\ \LaTeX{} 模板示例文档},
-    % en / display-title   = {A Sample Document \\ for \LaTeX-based SJTU Thesis Template},
+    % zh / display-title   = {西南财经大学学位论文\\ \LaTeX{} 模板示例文档},
+    % en / display-title   = {A Sample Document \\ for \LaTeX-based SWUFE Thesis Template},
     %
     % 关键词
     %
@@ -45,7 +159,7 @@
     %
     % 学号
     %
-    id              = {0010900990},
+    id                   = {0010900990},
     %
     % 学位
     %   本科生不需要填写
@@ -55,23 +169,31 @@
     %
     % 专业
     %
-    zh / major           = {某某专业},
-    en / major           = {A Very Important Major},
+    zh / major           = {计算机科学与技术},
+    en / major           = {Computer Science and Technology},
+    %
+    % 研究方向 (封面二需要)
+    %
+    zh / research-direction = {大模型},
     %
     % 所属院系
     %
-    zh / department      = {某某系},
-    en / department      = {Depart of XXX},
+    zh / department      = {计算机与人工智能学院},
+    en / department      = {School of Computing and Artificial Intelligence},
     %
-    % 答辩日期
-    %   使用 ISO 格式 (yyyy-mm-dd)；默认为当前时间
+    % 档案信息 (封面二顶部)
     %
-    % date                 = {2023-05-18},
+    classification       = {},               % 分类号
+    secret-level         = {},               % 密级 (如: 公开/内部/秘密)
+    udc                  = {},               % U.D.C
     %
-    % 标题页显示日期
-    %   覆盖对应标题页的日期显示，原样输出
+    % 答辩/定稿日期 (yyyy-mm-dd 格式；默认为当前时间)
     %
-    % zh / display-date    = {2023 年 5 月},
+    % date                 = {2026-03-01},
+    %
+    % 封面定稿时间 (不填则自动根据 date 或当前年月生成)
+    %
+    final-date           = {2026年3月},
     %
     % 资助基金
     %
@@ -102,6 +224,10 @@
     % achv            = {攻读学位期间完成的论文},
   },
 }
+
+\ExplSyntaxOn
+\__swufe_sync_review_status:
+\ExplSyntaxOff
 
 % 使用 BibLaTeX 处理参考文献
 %   biblatex-gb7714-2015 常用选项
@@ -205,12 +331,12 @@
 
 \makeatletter
 \newcommand{\swufe@coverone@defaults}{%
-  \def\swufe@coverone@zhtitle{你的论文标题标题标题}%
-  \def\swufe@coverone@entitle{This is Title This is Title This is Title This is Title This is Title This is Title This is Title This is Title}%
-  \def\swufe@coverone@applicant{}%
-  \def\swufe@coverone@supervisor{}%
-  \def\swufe@coverone@major{计算机科学与技术}%
-  \def\swufe@coverone@degree{工学硕士}%
+  \let\swufe@coverone@zhtitle\swufezhdisplaytitle
+  \let\swufe@coverone@entitle\swufeendisplaytitle
+  \let\swufe@coverone@applicant\swufeauthor
+  \let\swufe@coverone@supervisor\swufesupervisor
+  \let\swufe@coverone@major\swufemajor
+  \let\swufe@coverone@degree\swufedegree
 }
 
 \pgfkeys{
@@ -226,64 +352,76 @@
 
 \newenvironment{swufecoverone}[1][]{%
   \begingroup
-  \swufe@coverone@defaults
-  \pgfkeys{/swufe/coverone/.cd,#1}%
-  \thispagestyle{empty}%
-  \begin{titlepage}
-    % 1. 全页背景色填充（必须放在 titlepage 的最开头，作为最底层）
-    \tikz[remember picture, overlay] \fill[CoverGreen] (current page.south west) rectangle (current page.north east);
+  \ifswufehidecoverone
+    \setbox0=\vbox\bgroup
+  \else
+    \swufe@coverone@defaults
+    \pgfkeys{/swufe/coverone/.cd,#1}%
+    \ifswufereview
+      \def\swufe@coverone@applicant{}%
+      \def\swufe@coverone@supervisor{}%
+    \fi
+    \thispagestyle{empty}%
+    \begin{titlepage}
+      % 1. 全页背景色填充（必须放在 titlepage 的最开头，作为最底层）
+      \tikz[remember picture, overlay] \fill[CoverGreen] (current page.south west) rectangle (current page.north east);
 
-    % 2. 左上角校徽定位（叠在背景之上）
-    \tikz[remember picture, overlay]
-        \node[anchor=north west, xshift=2cm, yshift=-2cm] at (current page.north west) {
-            \includegraphics[width=10cm]{figures/swufefull.pdf}
-        };
+      % 2. 左上角校徽定位（叠在背景之上）
+      \tikz[remember picture, overlay]
+          \node[anchor=north west, xshift=2cm, yshift=-2cm] at (current page.north west) {
+              \includegraphics[width=10cm]{figures/swufefull.pdf}
+          };
 
-    \begin{center}
-        \vspace*{1.5cm}
+      \begin{center}
+          \vspace*{1.5cm}
 
-        \vspace{2.5cm}
+          \vspace{2.5cm}
 
-        \includegraphics[width=12cm]{figures/swufethesis-thesistitle-master.pdf}
+          \includegraphics[width=12cm]{figures/swufethesis-thesistitle-master.pdf}
 
-        \vspace{2.5cm}
+          \vspace{2.5cm}
 
-        {\heiti\zihao{2} \swufe@coverone@zhtitle \par}
-        \vspace{0.5cm}
-        {\sffamily\zihao{-3} \swufe@coverone@entitle \par}
+          {\heiti\zihao{2} \swufe@coverone@zhtitle \par}
+          \vspace{0.5cm}
+          {\sffamily\zihao{-3} \swufe@coverone@entitle \par}
 
-        \vfill
+          \vfill
 
-        % 底部信息对齐栏
-        {\heiti\zihao{4}
-        \renewcommand{\arraystretch}{1.8}
-        \begin{tabular}{lc}
-            \makebox[5.5em][s]{学位申请人}: & \underline{\makebox[7cm]{\swufe@coverone@applicant}} \\
-            \makebox[5.5em][s]{指导教师}: & \underline{\makebox[7cm]{\swufe@coverone@supervisor}} \\
-            \makebox[5.5em][s]{学科专业}: & \underline{\makebox[7cm]{\swufe@coverone@major}} \\
-            \makebox[5.5em][s]{学位类别}: & \underline{\makebox[7cm]{\swufe@coverone@degree}} \\
-        \end{tabular}
-        \par}
+          % 底部信息对齐栏
+          {\heiti\zihao{4}
+          \renewcommand{\arraystretch}{1.8}
+          \begin{tabular}{lc}
+              \makebox[5.5em][s]{学位申请人}: & \underline{\makebox[7cm]{\swufe@coverone@applicant}} \\
+              \makebox[5.5em][s]{指导教师}: & \underline{\makebox[7cm]{\swufe@coverone@supervisor}} \\
+              \makebox[5.5em][s]{学科专业}: & \underline{\makebox[7cm]{\swufe@coverone@major}} \\
+              \makebox[5.5em][s]{学位类别}: & \underline{\makebox[7cm]{\swufe@coverone@degree}} \\
+          \end{tabular}
+          \par}
 
-        \vspace{2.5cm}
-    \end{center}
+          \vspace{2.5cm}
+      \end{center}
+  \fi
 }{%
-  \end{titlepage}%
+  \ifswufehidecoverone
+    \egroup
+  \else
+    \end{titlepage}%
+  \fi
   \endgroup
 }
 
 \newcommand{\swufe@covertwo@defaults}{%
-  \def\swufe@covertwo@classification{}%
-  \def\swufe@covertwo@secretlevel{}%
-  \def\swufe@covertwo@udc{}%
-  \def\swufe@covertwo@zhtitle{你的标题你的标题你的标题你的标题你的标题}%
-  \def\swufe@covertwo@entitle{This is Title This is Title This is Title This is Title This is Title This is Title}%
-  \def\swufe@covertwo@applicant{}%
-  \def\swufe@covertwo@studentid{}%
-  \def\swufe@covertwo@major{计算机科学与技术}%
-  \def\swufe@covertwo@researchdirection{大模型}%
-  \def\swufe@covertwo@supervisor{}%
-  \def\swufe@covertwo@finaldate{2026年3月}%
+  \let\swufe@covertwo@classification\swufeclassification
+  \let\swufe@covertwo@secretlevel\swufesecretlevel
+  \let\swufe@covertwo@udc\swufeudc
+  \let\swufe@covertwo@zhtitle\swufezhdisplaytitle
+  \let\swufe@covertwo@entitle\swufeendisplaytitle
+  \let\swufe@covertwo@applicant\swufeauthor
+  \let\swufe@covertwo@studentid\swufeid
+  \let\swufe@covertwo@major\swufemajor
+  \let\swufe@covertwo@researchdirection\swuferesearchdirection
+  \let\swufe@covertwo@supervisor\swufesupervisor
+  \let\swufe@covertwo@finaldate\swufefinaldate
 }
 
 \pgfkeys{
@@ -306,6 +444,11 @@
   \begingroup
   \swufe@covertwo@defaults
   \pgfkeys{/swufe/covertwo/.cd,#1}%
+  \ifswufereview
+    \def\swufe@covertwo@applicant{}%
+    \def\swufe@covertwo@studentid{}%
+    \def\swufe@covertwo@supervisor{}%
+  \fi
   \thispagestyle{empty}%
   \begin{titlepage}
     % 顶部档案信息区：五号 (10.5pt)
@@ -351,6 +494,9 @@
   \end{titlepage}%
   \endgroup
 }
+
+\newcommand{\makeswufecoverone}[1][]{\begin{swufecoverone}[#1]\end{swufecoverone}}
+\newcommand{\makeswufecovertwo}[1][]{\begin{swufecovertwo}[#1]\end{swufecovertwo}}
 \makeatother
 
 % 在读期间科研成果目录环境：成果内容在 contents/在校成果.tex 中填写。
@@ -435,11 +581,20 @@
 % 3. 清空模板原有页眉页脚
 \fancyhf{}
 
-% 4. 偶数页：论文题目
-\fancyhead[LE]{\zihao{-5}\songti 你的标题你的标题你的标题}
-
-% 5. 奇数页：章节名
-\fancyhead[RO]{\zihao{-5}\songti \leftmark}
+% 4. 页眉：偶数页为论文题目，奇数页为章节名
+\if@twoside
+  \fancyhead[LE]{\zihao{-5}\songti \swufezhtitle}
+  \fancyhead[RO]{\zihao{-5}\songti \leftmark}
+\else
+  \fancyhead[C]{%
+    \zihao{-5}\songti
+    \ifodd\value{page}
+      \leftmark
+    \else
+      \swufezhtitle
+    \fi
+  }
+\fi
 
 % 6. 页码
 \fancyfoot[C]{\zihao{-5}\thepage}

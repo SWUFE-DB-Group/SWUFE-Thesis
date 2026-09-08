@@ -68,7 +68,7 @@
   \ifodd\value{page}
     \leftmark
   \else
-    你的标题你的标题你的标题
+    \swufezhtitle
   \fi
 }
 
@@ -148,16 +148,24 @@
 \renewcommand{\thetable}{\arabic{chapter}-\arabic{table}}
 
 %%%%%%
-\input{contents/封面一}
-\clearpage
-\thispagestyle{empty}
-\cleardoublepage
+\ifswufehidecoverone
+  % 盲审模式且设置了隐藏封面一（绿皮外封），跳过
+\else
+  \input{contents/封面一}
+  \clearpage
+  \thispagestyle{empty}
+  \cleardoublepage
+\fi
 
 \input{contents/封面二}
 \clearpage
 
-\input{contents/版权说明}
-\clearpage
+\ifswufereview
+  % 盲审模式下自动跳过版权说明及原创性声明页（避免泄露签名）
+\else
+  \input{contents/版权说明}
+  \clearpage
+\fi
 
 \pagenumbering{Roman}
 \pagestyle{fancy}
@@ -205,9 +213,13 @@
 \backmatter
 \pagestyle{fancy}
 
-\input{contents/致谢}
-\clearpage
-\pagestyle{fancy}
+\ifswufereview
+  % 盲审模式下自动跳过致谢
+\else
+  \input{contents/致谢}
+  \clearpage
+  \pagestyle{fancy}
+\fi
 
 \input{contents/在校成果}
 \clearpage
