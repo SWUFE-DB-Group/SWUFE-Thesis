@@ -132,9 +132,10 @@ make wordcount                # 论文字数统计
 
 - **在 `config.json` 中配置**：
   ```json
-  "review": false,                // false 为终稿模式（默认）；true 为盲审模式
-  "hide_coverone_in_review": false // 盲审时是否隐藏封面一（绿皮外封），默认 false（保留匿名横线）
+  "review": false,
+  "hide_coverone_in_review": false
   ```
+  *(注：`review: false` 为终稿模式，`true` 为盲审模式；`hide_coverone_in_review: true` 可在盲审时跳过绿皮外封)*
 - **在 `setup.tex` 中配置**：
   ```latex
   \sjtusetup{
