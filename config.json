@@ -1,0 +1,42 @@
+{
+  "review": false,
+  "hide_coverone_in_review": false,
+  "info": {
+    "title": {
+      "zh": "西南财经大学学位论文 \\LaTeX{} 模板示例文档",
+      "en": "A Sample Document for \\LaTeX-based SWUFE Thesis Template",
+      "display_zh": "",
+      "display_en": ""
+    },
+    "keywords": {
+      "zh": "西南财经大学；历史沿革；211工程",
+      "en": "SWUFE; LaTeX; Python"
+    },
+    "author": {
+      "zh": "某\\quad{}某",
+      "en": "Mo Mo"
+    },
+    "supervisor": {
+      "zh": "某某教授",
+      "en": "Prof.\\ Mou Mou"
+    },
+    "student_id": "0010900990",
+    "degree": {
+      "zh": "工学硕士",
+      "en": "Master of Engineering"
+    },
+    "major": {
+      "zh": "计算机科学与技术",
+      "en": "Computer Science and Technology"
+    },
+    "research_direction": "大模型",
+    "department": {
+      "zh": "计算机与人工智能学院",
+      "en": "School of Computing and Artificial Intelligence"
+    },
+    "classification": "",
+    "secret_level": "",
+    "udc": "",
+    "final_date": "2026年3月"
+  }
+}

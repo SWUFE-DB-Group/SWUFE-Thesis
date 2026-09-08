@@ -49,9 +49,70 @@ make wordcount                # 论文字数统计
 
 ## 论文信息配置与模式切换
 
-### 1. 论文信息配置
+本项目支持两种配置方式：
+1. **JSON 配置文件（推荐，零依赖）**：直接编辑根目录下的 `config.json`，无需接触 LaTeX 代码。
+2. **LaTeX 配置文件**：若无 `config.json`（或将其删除），则自动无缝回退至 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex) 中的原生设置。
 
-论文的所有核心信息均在 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex) 的 `\sjtusetup{ info = { ... } }` 中集中配置，**封面一（绿皮外封）、封面二（扉页）以及正文页眉将自动读取该处信息**，无需再在封面文件中重复填写：
+### 1. 方式一：使用 `config.json` 配置（推荐）
+
+模板基于 TeX Live 内置的 `jsonparse` 宏包实现了**原生零依赖**的 JSON 解析，**无需安装 Python、无需开启 `--shell-escape`，在本地与 Overleaf 均可开箱即用**。
+
+编辑根目录下的 [config.json](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/config.json) 即可统一管理论文元数据与模式：
+
+```json
+{
+  "review": false,
+  "hide_coverone_in_review": false,
+  "info": {
+    "title": {
+      "zh": "西南财经大学学位论文 \\LaTeX{} 模板示例文档",
+      "en": "A Sample Document for \\LaTeX-based SWUFE Thesis Template",
+      "display_zh": "",
+      "display_en": ""
+    },
+    "keywords": {
+      "zh": "西南财经大学；历史沿革；211工程",
+      "en": "SWUFE; LaTeX; Python"
+    },
+    "author": {
+      "zh": "某\\quad{}某",
+      "en": "Mo Mo"
+    },
+    "supervisor": {
+      "zh": "某某教授",
+      "en": "Prof.\\ Mou Mou"
+    },
+    "student_id": "0010900990",
+    "degree": {
+      "zh": "工学硕士",
+      "en": "Master of Engineering"
+    },
+    "major": {
+      "zh": "计算机科学与技术",
+      "en": "Computer Science and Technology"
+    },
+    "research_direction": "大模型",
+    "department": {
+      "zh": "计算机与人工智能学院",
+      "en": "School of Computing and Artificial Intelligence"
+    },
+    "classification": "",
+    "secret_level": "",
+    "udc": "",
+    "final_date": "2026年3月"
+  }
+}
+```
+
+> **注意**：
+> - 在 JSON 字符串中，若包含 LaTeX 转义命令（例如 `\LaTeX`、`\quad`），需写为双反斜杠转义（如 `\\LaTeX{}`、`\\quad{}`）。
+> - `display_zh` / `display_en` 可选，仅在封面标题需要手动控制断行（如 `标题第一行\\\\标题第二行`）时填写；留空时将自动使用 `title`。
+
+---
+
+### 2. 方式二：直接在 `setup.tex` 中配置
+
+如果不使用 `config.json`，直接删除或重命名该文件即可。论文的所有核心信息均在 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex) 的 `\sjtusetup{ info = { ... } }` 中集中配置：
 
 - `zh / title`、`en / title`：中英文标题（页眉、PDF 书签与元数据自动同步）
 - `zh / display-title`、`en / display-title`：封面换行标题（可选，支持用 `\\` 手动换行）
@@ -63,18 +124,25 @@ make wordcount                # 论文字数统计
 - `classification`、`secret-level`、`udc`：分类号、密级、UDC（封面二自动读取）
 - `final-date`：定稿时间（封面二自动读取，未填时自动使用当前年月）
 
-### 2. 盲审 / 终稿 模式切换
+---
 
-在 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex) 顶部可一键切换盲审与终稿模式：
+### 3. 盲审 / 终稿 模式切换
 
-```latex
-\sjtusetup{
-  review                  = false, % false 为终稿模式（默认）；true 为盲审模式
-  hide-coverone-in-review = false, % 盲审时是否隐藏封面一（绿皮外封），默认 false（保留匿名横线）
-  ...
-}
-```
+无论使用 `config.json` 还是 `setup.tex`，均可一键切换盲审与终稿模式：
 
+- **在 `config.json` 中配置**：
+  ```json
+  "review": false,                // false 为终稿模式（默认）；true 为盲审模式
+  "hide_coverone_in_review": false // 盲审时是否隐藏封面一（绿皮外封），默认 false（保留匿名横线）
+  ```
+- **在 `setup.tex` 中配置**：
+  ```latex
+  \sjtusetup{
+    review                  = false,
+    hide-coverone-in-review = false,
+    ...
+  }
+  ```
 *注：亦可在 [main.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/main.tex) 的 `\documentclass[..., review]{sjtuthesis}` 中开启盲审。*
 
 **模式行为差异：**

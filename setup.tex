@@ -226,6 +226,86 @@
 }
 
 \ExplSyntaxOn
+% =========================================================
+% 支持通过 config.json 读取配置（零依赖，开箱即用）
+% 若当前目录下存在 config.json，则自动读取并覆盖上述信息
+% =========================================================
+\file_if_exist:nT { config.json }
+  {
+    \cs_new_protected:Npn \__swufe_load_json_val:nn #1#2
+      {
+        \clist_map_inline:nn {#2}
+          {
+            \prop_if_in:NnT \swufeJsonData {##1}
+              {
+                \JSONParseSetRescanValue \l_tmpa_tl \swufeJsonData {##1}
+                \tl_if_empty:NF \l_tmpa_tl
+                  {
+                    \keys_set:nx { sjtu / info } { #1 = { \exp_not:V \l_tmpa_tl } }
+                  }
+              }
+          }
+      }
+    \cs_new_protected:Npn \__swufe_load_json_bool:nn #1#2
+      {
+        \clist_map_inline:nn {#2}
+          {
+            \prop_if_in:NnT \swufeJsonData {##1}
+              {
+                \JSONParseSetRescanValue \l_tmpa_tl \swufeJsonData {##1}
+                \tl_if_empty:NF \l_tmpa_tl
+                  {
+                    \keys_set:nx { sjtu } { #1 = \tl_use:N \l_tmpa_tl }
+                  }
+              }
+          }
+      }
+
+    \ExplSyntaxOff
+    \RequirePackage{jsonparse}
+    \JSONParseFromFile{\swufeJsonData}{config.json}
+    \ExplSyntaxOn
+
+    % 模式控制
+    \__swufe_load_json_bool:nn { review } { {review} }
+    \__swufe_load_json_bool:nn { hide-coverone-in-review } { {hide_coverone_in_review}, {hide-coverone-in-review} }
+
+    % 标题与关键词
+    \tl_clear:c { l__sjtu_info_display_title_zh_tl }
+    \tl_clear:c { l__sjtu_info_display_title_en_tl }
+    \__swufe_load_json_val:nn { zh / title } { {info.title.zh}, {title.zh}, {title_zh} }
+    \__swufe_load_json_val:nn { en / title } { {info.title.en}, {title.en}, {title_en} }
+    \__swufe_load_json_val:nn { zh / display-title } { {info.title.display_zh}, {title.display_zh}, {display_title_zh} }
+    \__swufe_load_json_val:nn { en / display-title } { {info.title.display_en}, {title.display_en}, {display_title_en} }
+    \__swufe_load_json_val:nn { zh / keywords } { {info.keywords.zh}, {keywords.zh}, {keywords_zh} }
+    \__swufe_load_json_val:nn { en / keywords } { {info.keywords.en}, {keywords.en}, {keywords_en} }
+
+    % 作者与导师
+    \__swufe_load_json_val:nn { zh / author } { {info.author.zh}, {author.zh}, {author_zh} }
+    \__swufe_load_json_val:nn { en / author } { {info.author.en}, {author.en}, {author_en} }
+    \__swufe_load_json_val:nn { zh / supervisor } { {info.supervisor.zh}, {supervisor.zh}, {supervisor_zh} }
+    \__swufe_load_json_val:nn { en / supervisor } { {info.supervisor.en}, {supervisor.en}, {supervisor_en} }
+    \__swufe_load_json_val:nn { zh / assoc-supervisor } { {info.assoc_supervisor.zh}, {assoc_supervisor.zh}, {assoc_supervisor_zh} }
+    \__swufe_load_json_val:nn { en / assoc-supervisor } { {info.assoc_supervisor.en}, {assoc_supervisor.en}, {assoc_supervisor_en} }
+    \__swufe_load_json_val:nn { id } { {info.student_id}, {student_id}, {id}, {info.id} }
+
+    % 专业与学位
+    \__swufe_load_json_val:nn { zh / degree } { {info.degree.zh}, {degree.zh}, {degree_zh} }
+    \__swufe_load_json_val:nn { en / degree } { {info.degree.en}, {degree.en}, {degree_en} }
+    \__swufe_load_json_val:nn { zh / major } { {info.major.zh}, {major.zh}, {major_zh} }
+    \__swufe_load_json_val:nn { en / major } { {info.major.en}, {major.en}, {major_en} }
+    \__swufe_load_json_val:nn { zh / research-direction } { {info.research_direction}, {research_direction}, {research-direction} }
+    \__swufe_load_json_val:nn { zh / department } { {info.department.zh}, {department.zh}, {department_zh} }
+    \__swufe_load_json_val:nn { en / department } { {info.department.en}, {department.en}, {department_en} }
+
+    % 档案与日期
+    \__swufe_load_json_val:nn { classification } { {info.classification}, {classification} }
+    \__swufe_load_json_val:nn { secret-level } { {info.secret_level}, {secret_level}, {secret-level} }
+    \__swufe_load_json_val:nn { udc } { {info.udc}, {udc} }
+    \__swufe_load_json_val:nn { date } { {info.date}, {date} }
+    \__swufe_load_json_val:nn { final-date } { {info.final_date}, {final_date}, {final-date} }
+  }
+
 \__swufe_sync_review_status:
 \ExplSyntaxOff
 
