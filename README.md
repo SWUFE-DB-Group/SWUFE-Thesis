@@ -2,7 +2,6 @@
 
 修改自[上海交通大学论文](https://github.com/sjtug/sjtuthesis)模板，适用于西南财经大学硕士论文的撰写。
 
-
 ## 获取模板
 
 ### 下载模版
@@ -50,6 +49,7 @@ make wordcount                # 论文字数统计
 ## 论文信息配置与模式切换
 
 本项目支持两种配置方式：
+
 1. **JSON 配置文件（推荐，零依赖）**：直接编辑根目录下的 `config.json`，无需接触 LaTeX 代码。
 2. **LaTeX 配置文件**：若无 `config.json`（或将其删除），则自动无缝回退至 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex) 中的原生设置。
 
@@ -105,6 +105,7 @@ make wordcount                # 论文字数统计
 ```
 
 > **注意**：
+>
 > - **关于注释**：标准 JSON 规范（RFC 8259）**不支持** `//` 或 `/* */` 注释，直接添加会导致编译报错。如需添加说明，建议使用 `"_comment": "说明文字"` 形式的键值（模板会自动忽略所有未定义的额外键），或者直接使用下述方式二的 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex)（原生支持 `%` 注释）。
 > - **转义字符**：在 JSON 字符串中，若包含 LaTeX 转义命令（例如 `\LaTeX`、`\quad`），需写为双反斜杠转义（如 `\\LaTeX{}`、`\\quad{}`）。
 > - **换行标题**：`display_zh` / `display_en` 可选，仅在封面标题需要手动控制断行（如 `标题第一行\\\\标题第二行`）时填写；留空时将自动使用 `title`。
@@ -132,12 +133,15 @@ make wordcount                # 论文字数统计
 无论使用 `config.json` 还是 `setup.tex`，均可一键切换盲审与终稿模式：
 
 - **在 `config.json` 中配置**：
+
   ```json
   "review": false,
   "hide_coverone_in_review": false
   ```
-  *(注：`review: false` 为终稿模式，`true` 为盲审模式；`hide_coverone_in_review: true` 可在盲审时跳过绿皮外封)*
+
+  _(注：`review: false` 为终稿模式，`true` 为盲审模式；`hide_coverone_in_review: true` 可在盲审时跳过绿皮外封)_
 - **在 `setup.tex` 中配置**：
+
   ```latex
   \sjtusetup{
     review                  = false,
@@ -145,14 +149,16 @@ make wordcount                # 论文字数统计
     ...
   }
   ```
-*注：亦可在 [main.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/main.tex) 的 `\documentclass[..., review]{sjtuthesis}` 中开启盲审。*
+
+_注：亦可在 [main.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/main.tex) 的 `\documentclass[..., review]{sjtuthesis}` 中开启盲审。_
 
 **模式行为差异：**
 
-| 功能项 | 终稿模式 (`review = false`) | 盲审模式 (`review = true`) |
-| :--- | :--- | :--- |
-| **封面一（绿皮外封）** | 显示申请人与导师姓名 | 申请人与导师姓名自动留空（保留下划线横线）；若开启 `hide-coverone-in-review = true` 则直接跳过该页 |
-| **封面二（扉页）** | 显示申请人、学号与导师姓名 | 申请人、学号与导师姓名自动留空（保留下划线横线） |
-| **原创与版权声明页** | 正常输出带签名的声明页 | 自动略过不输出（防止手写签名泄密） |
-| **致谢** | 正常输出 | 自动略过不输出（防止致谢内容泄密） |
-| **页眉与成果目录** | 正常输出 | 页眉自动读取论文标题，成果目录保持规范匿名格式 |
+| 功能项                 | 终稿模式 (`review = false`) | 盲审模式 (`review = true`)                                                                         |
+| :--------------------- | :-------------------------- | :------------------------------------------------------------------------------------------------- |
+| **封面一（绿皮外封）** | 显示申请人与导师姓名        | 申请人与导师姓名自动留空（保留下划线横线）；若开启 `hide-coverone-in-review = true` 则直接跳过该页 |
+| **封面二（扉页）**     | 显示申请人、学号与导师姓名  | 申请人、学号与导师姓名自动留空（保留下划线横线）                                                   |
+| **原创与版权声明页**   | 正常输出带签名的声明页      | 自动略过不输出（防止手写签名泄密）                                                                 |
+| **致谢**               | 正常输出                    | 自动略过不输出（防止致谢内容泄密）                                                                 |
+| **页眉与成果目录**     | 正常输出                    | 页眉自动读取论文标题，成果目录保持规范匿名格式                                                     |
+
