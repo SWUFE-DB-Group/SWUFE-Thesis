@@ -105,8 +105,9 @@ make wordcount                # 论文字数统计
 ```
 
 > **注意**：
-> - 在 JSON 字符串中，若包含 LaTeX 转义命令（例如 `\LaTeX`、`\quad`），需写为双反斜杠转义（如 `\\LaTeX{}`、`\\quad{}`）。
-> - `display_zh` / `display_en` 可选，仅在封面标题需要手动控制断行（如 `标题第一行\\\\标题第二行`）时填写；留空时将自动使用 `title`。
+> - **关于注释**：标准 JSON 规范（RFC 8259）**不支持** `//` 或 `/* */` 注释，直接添加会导致编译报错。如需添加说明，建议使用 `"_comment": "说明文字"` 形式的键值（模板会自动忽略所有未定义的额外键），或者直接使用下述方式二的 [setup.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-Thesis/setup.tex)（原生支持 `%` 注释）。
+> - **转义字符**：在 JSON 字符串中，若包含 LaTeX 转义命令（例如 `\LaTeX`、`\quad`），需写为双反斜杠转义（如 `\\LaTeX{}`、`\\quad{}`）。
+> - **换行标题**：`display_zh` / `display_en` 可选，仅在封面标题需要手动控制断行（如 `标题第一行\\\\标题第二行`）时填写；留空时将自动使用 `title`。
 
 ---
 
