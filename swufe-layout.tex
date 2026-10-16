@@ -1,0 +1,125 @@
+% !TEX root = ./main.tex
+% 西财研究生学位论文印刷格式：
+% https://graduate.swufe.edu.cn/info/1036/2142.htm
+\usepackage{setspace}
+
+% 页眉框顶边距 2.8 cm；页码基线距纸底 2.5 cm。
+% 所有版心参数同时交给 geometry 计算，之后不要单独修改 headheight。
+\geometry{
+  a4paper,
+  top=3.9cm, bottom=3.4cm,
+  left=3.45cm, right=3.45cm,
+  bindingoffset=0pt,
+  headheight=14bp,
+  headsep=\dimexpr1.1cm-14bp\relax,
+  footskip=0.9cm
+}
+
+% 22.4 cm 的版心分为 30 个行位；单倍基线经 1.37 倍后落到该网格。
+% 小四号汉字宽 12 bp，14.1 cm 的版心每行可容纳 33 个全角汉字。
+\newlength{\swufebodybaseline}
+\newlength{\swufesinglebaseline}
+\newlength{\swufehalflineskip}
+\setlength{\swufebodybaseline}{\dimexpr\textheight/30\relax}
+\setlength{\swufehalflineskip}{\dimexpr\swufebodybaseline/2\relax}
+\ExplSyntaxOn
+\dim_set:Nn \swufesinglebaseline
+  { \fp_to_dim:n { \dim_to_fp:n { \swufebodybaseline } / 1.37 } }
+\ExplSyntaxOff
+\AddToHook{cmd/normalsize/after}{%
+  \fontsize{12bp}{\swufesinglebaseline}\selectfont
+}
+\AddToHook{begindocument/end}{%
+  \setstretch{1.37}\normalsize\songti
+  \setlength{\parskip}{0pt}%
+  \setlength{\parindent}{2\ccwd}%
+}
+
+% 西文字体仍使用模板自带的 Times New Roman 四种字形。
+\setmainfont[
+  Path=font/,
+  UprightFont={Times New Roman.ttf},
+  BoldFont={Times New Roman Bold.ttf},
+  ItalicFont={Times New Roman Italic.ttf},
+  BoldItalicFont={Times New Roman Bold Italic.ttf}
+]{}
+
+% 一级标题使用真正的小标宋；华文中宋仅用于内封，不作为替代字体。
+\newfontfamily\swufexbslatin[Path=font/]{方正小标宋简体.ttf}
+\setCJKfamilyfont{swufexbs}[Path=font/]{方正小标宋简体.ttf}
+\newcommand{\swufexiaobiaosong}{\swufexbslatin\CJKfamily{swufexbs}}
+
+\ctexset{
+  chapter={
+    name={}, number=\arabic{chapter},
+    format=\centering\normalfont\swufexiaobiaosong\zihao{2},
+    titleformat=\swufexiaobiaosong\zihao{2},
+    numberformat=\swufexiaobiaosong\zihao{2},
+    beforeskip=0pt, afterskip=\swufebodybaseline,
+    aftername={\ }, pagestyle=fancy
+  },
+  section={format=\normalfont\heiti\zihao{-3}},
+  subsection={format=\normalfont\heiti\zihao{-4}}
+}
+
+% 页眉和页码的中文、西文、数字均使用宋体、小五号。
+\newfontfamily\swufeheaderlatin{FandolSong-Regular.otf}
+\newcommand{\swufeheaderfont}{%
+  \normalfont\linespread{1}\swufeheaderlatin\songti\fontsize{9bp}{12bp}\selectfont
+}
+\makeatletter
+\renewcommand{\chaptermark}[1]{\markboth{\arabic{chapter}\ #1}{}}
+\fancyhf{}
+\fancyhfoffset{0pt}
+\setlength{\headwidth}{\textwidth}
+\fancyheadinit{\swufeheaderfont}
+\fancyfootinit{\swufeheaderfont}
+\fancyhead[C]{%
+  \swufeheaderfont
+  \ifodd\value{page}\leftmark\else\swufezhtitle\fi
+}
+\fancyfoot[C]{\swufeheaderfont\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hrule height 0.4pt width\headwidth}
+\let\ps@plain\ps@fancy
+\let\ps@headings\ps@fancy
+\makeatother
+\pagestyle{fancy}
+
+% setspace 会在浮动体开始时恢复 normalsize，因此在环境开始后显式设五号。
+\newcommand{\swufefloatfont}{%
+  \normalfont\songti\fontsize{10.5bp}{14bp}\selectfont
+}
+\makeatletter
+\apptocmd{\@xfloat}{\swufefloatfont}{}{%
+  \PackageError{swufethesis}{Cannot set float font}{Check the setspace version.}%
+}
+\makeatother
+\AddToHook{env/longtable/begin}{\swufefloatfont}
+\DeclareCaptionFont{swufefigure}{\swufefloatfont}
+\DeclareCaptionFont{swufetable}{%
+  \normalfont\heiti\fontsize{10.5bp}{14bp}\selectfont
+}
+\captionsetup{font=swufefigure,labelfont={},textfont={},skip=6bp}
+\captionsetup[table]{font=swufetable,position=top}
+\captionsetup*[sub]{font=swufefigure}
+
+% 普通文字与浮动图表之间各留半行；相邻浮动体的两个半行合为一行。
+\setlength{\textfloatsep}{\swufehalflineskip}
+\setlength{\intextsep}{\swufehalflineskip}
+\setlength{\floatsep}{\swufebodybaseline}
+\setlength{\dbltextfloatsep}{\swufehalflineskip}
+\setlength{\dblfloatsep}{\swufebodybaseline}
+
+\newcommand{\swufetablenotefont}{%
+  \normalfont\songti\fontsize{9bp}{12bp}\selectfont
+}
+\newcommand{\swufetablenote}[1]{%
+  \par\smallskip\noindent{\swufetablenotefont #1\par}%
+}
+\appto\TPTnoteSettings{\swufetablenotefont}
+
+% 封面不属于正文版心；独立布局避免长标题只将最后一个字挤到下一行。
+\newcommand{\swufecovergeometry}{%
+  \newgeometry{top=2.8cm,bottom=3cm,left=2.75cm,right=2.75cm,bindingoffset=0pt}%
+}

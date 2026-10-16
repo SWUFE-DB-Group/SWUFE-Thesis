@@ -466,6 +466,7 @@
       \def\swufe@coverone@supervisor{}%
     \fi
     \thispagestyle{empty}%
+    \swufecovergeometry
     \begin{titlepage}
       % 1. 全页背景色填充（必须放在 titlepage 的最开头，作为最底层）
       \tikz[remember picture, overlay] \fill[CoverGreen] (current page.south west) rectangle (current page.north east);
@@ -510,6 +511,7 @@
     \egroup
   \else
     \end{titlepage}%
+    \restoregeometry
   \fi
   \endgroup
 }
@@ -554,6 +556,7 @@
     \def\swufe@covertwo@supervisor{}%
   \fi
   \thispagestyle{empty}%
+  \swufecovergeometry
   \begin{titlepage}
     % 顶部档案信息区：五号 (10.5pt)
     {\zihao{5}
@@ -596,6 +599,7 @@
     \end{center}
 }{%
   \end{titlepage}%
+  \restoregeometry
   \endgroup
 }
 
@@ -669,47 +673,5 @@
 \providecommand{\email}[1]{\href{mailto:#1}{\urlstyle{tt}\nolinkurl{#1}}}
 
 
-\makeatletter
-
-% 1. 章节页不要用模板默认的空页眉
-\ctexset{
-  chapter = {
-    pagestyle = fancy
-  }
-}
-
-% 2. 重新定义章节页眉内容
-\renewcommand{\chaptermark}[1]{%
-  \markboth{\arabic{chapter}.#1}{}}
-
-% 3. 清空模板原有页眉页脚
-\fancyhf{}
-
-% 4. 页眉：偶数页为论文题目，奇数页为章节名
-\if@twoside
-  \fancyhead[LE]{\zihao{-5}\songti \swufezhtitle}
-  \fancyhead[RO]{\zihao{-5}\songti \leftmark}
-\else
-  \fancyhead[C]{%
-    \zihao{-5}\songti
-    \ifodd\value{page}
-      \leftmark
-    \else
-      \swufezhtitle
-    \fi
-  }
-\fi
-
-% 6. 页码
-\fancyfoot[C]{\zihao{-5}\thepage}
-
-% 7. 改成单线页眉（覆盖模板双线）
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\headrule}{\hrule height 0.4pt width\headwidth}
-
-% 8. 章节首页也强制用同样样式
-\let\ps@plain\ps@fancy
-\let\ps@headings\ps@fancy
-
-\makeatother
-\pagestyle{fancy}
+% 西财论文版心、字体、行距、页眉页脚与图表格式统一在此维护。
+\input{swufe-layout}

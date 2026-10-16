@@ -1,7 +1,7 @@
 """Compile isolated template copies and check SJTUTeX migration behavior.
 
 Run with: python3 -m unittest discover -s tests -v
-Requires XeLaTeX, latexmk, pdfinfo and pdftotext; uses no Python dependencies.
+Requires XeLaTeX, latexmk and Poppler; uses no Python dependencies.
 """
 
 import json
@@ -12,10 +12,11 @@ import subprocess
 import tempfile
 import unittest
 import unicodedata
+import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOLS = ("xelatex", "latexmk", "pdfinfo", "pdftotext")
+TOOLS = ("xelatex", "latexmk", "pdfinfo", "pdftotext", "pdftohtml")
 
 
 @unittest.skipUnless(all(shutil.which(tool) for tool in TOOLS), "TeX/Poppler required")
@@ -24,7 +25,7 @@ class TemplateTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix="swufe-template-test-")
         self.addCleanup(self.temp.cleanup)
         self.project = Path(self.temp.name)
-        for name in ("main.tex", "setup.tex", "config.json"):
+        for name in ("main.tex", "setup.tex", "swufe-layout.tex", "config.json"):
             shutil.copy2(ROOT / name, self.project / name)
         for name in ("contents", "figures", "font", "img"):
             shutil.copytree(ROOT / name, self.project / name)
@@ -40,7 +41,7 @@ class TemplateTests(unittest.TestCase):
             "keywords": {"zh": "版本迁移；配置校验", "en": "version migration; metadata"},
         })
 
-    def build(self, config=True, succeeds=True):
+    def build(self, config=True, succeeds=True, thesis=True):
         if config:
             (self.project / "config.json").write_text(
                 json.dumps(self.config, ensure_ascii=False, indent=2)
@@ -64,7 +65,8 @@ class TemplateTests(unittest.TestCase):
         self.assertGreaterEqual(tuple(map(int, version[1].split("."))), (2, 3, 1))
         for warning in ("undefined citations", "undefined references", "Rerun to get",
                         "Rerun LaTeX", "Label(s) may have changed",
-                        "Unknown key", "unknown key", "Overfull", "Missing character"):
+                        "Unknown key", "unknown key", "Overfull", "Missing character",
+                        "Package fancyhdr Warning"):
             self.assertFalse(warning in log, warning)
         pdf = str(self.project / "main.pdf")
         self.info = subprocess.check_output(["pdfinfo", pdf], text=True)
@@ -73,6 +75,8 @@ class TemplateTests(unittest.TestCase):
         ))
         self.compact = re.sub(r"\s", "", self.text)
         self.pages = self.text.split("\f")
+        if not thesis:
+            return log
         toc = (self.project / "main.toc").read_text()
         self.assertNotIn("Abstract", toc)
         self.assertNotIn("摘要", re.sub(r"\s", "", toc))
@@ -157,6 +161,110 @@ class TemplateTests(unittest.TestCase):
             r"\LoadClass{article}" "\n"
         )
         self.assertIn("SJTUTeX 2.3.1 or newer is required", self.build(succeeds=False))
+
+    LAYOUT_PROBE = r"""
+\makeatletter
+\newcommand{\swufelayoutprobe}{%
+\typeout{SWUFE-WIDTH=\the\textwidth}%
+\typeout{SWUFE-HEIGHT=\the\textheight}%
+\typeout{SWUFE-HEADWIDTH=\the\headwidth}%
+\typeout{SWUFE-LEFT=\the\dimexpr1in+\hoffset+\oddsidemargin\relax}%
+\typeout{SWUFE-RIGHT=\the\dimexpr\paperwidth-1in-\hoffset-\oddsidemargin-\textwidth\relax}%
+\typeout{SWUFE-TOP=\the\dimexpr1in+\voffset+\topmargin+\headheight+\headsep\relax}%
+\typeout{SWUFE-BOTTOM=\the\dimexpr\paperheight-1in-\voffset-\topmargin-\headheight-\headsep-\textheight\relax}%
+\typeout{SWUFE-HEADER=\the\dimexpr1in+\voffset+\topmargin\relax}%
+\typeout{SWUFE-FOOTER=\the\dimexpr\paperheight-1in-\voffset-\topmargin-\headheight-\headsep-\textheight-\footskip\relax}%
+\typeout{SWUFE-BASELINE=\the\baselineskip}%
+\typeout{SWUFE-STRETCH=\baselinestretch}%
+\typeout{SWUFE-FLOATGAP=\the\intextsep}%
+}
+\makeatother
+"""
+
+    def assert_layout(self, log):
+        expected_cm = {
+            "WIDTH": 14.1, "HEIGHT": 22.4, "HEADWIDTH": 14.1,
+            "LEFT": 3.45, "RIGHT": 3.45,
+            "TOP": 3.9, "BOTTOM": 3.4, "HEADER": 2.8, "FOOTER": 2.5,
+            "BASELINE": 22.4 / 30, "FLOATGAP": 22.4 / 60,
+        }
+        for key, value in expected_cm.items():
+            match = re.search(r"SWUFE-" + key + r"=([\d.]+)pt", log)
+            self.assertIsNotNone(match, key)
+            self.assertAlmostEqual(float(match[1]) / 72.27 * 2.54, value, places=4)
+        self.assertIn("SWUFE-STRETCH=1.37", log)
+
+    def test_geometry_restored_after_covers(self):
+        path = self.project / "main.tex"
+        source = path.read_text().replace(
+            r"\begin{document}", self.LAYOUT_PROBE + r"\begin{document}"
+        ).replace(r"\mainmatter", r"\mainmatter\swufelayoutprobe")
+        path.write_text(source)
+        self.build()
+        self.assert_layout((self.project / "main.log").read_text())
+
+    def test_print_grid_and_fonts(self):
+        source = r"""\documentclass[type=master,openany,oneside,cjk-font=fandol,baselineskip=false]{sjtuthesis}
+\input{setup}
+""" + self.LAYOUT_PROBE + r"""
+\begin{document}
+\swufelayoutprobe
+\noindent
+""" + "测" * (33 * 65) + r"""
+\par\clearpage
+\chapter{一级标题测量}
+\section{二级标题测量}
+\subsection{三级标题测量}
+正文测量
+\begin{table}[h]
+\caption{表题测量}
+\centering\begin{tabular}{cc}表格内容 & 测量内容\\\end{tabular}
+\swufetablenote{注：表注测量}
+\end{table}
+\begin{figure}[h]
+\centering\rule{2cm}{1cm}
+\caption{图题测量}
+\end{figure}
+\end{document}
+"""
+        (self.project / "main.tex").write_text(source)
+        log = self.build(thesis=False)
+        self.assert_layout(log)
+        pdf = str(self.project / "main.pdf")
+        xml = self.project / "layout.xml"
+        subprocess.run(
+            ["pdftohtml", "-xml", "-i", "-hidden", "-zoom", "1", pdf, str(xml)],
+            check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+        root = ET.parse(xml).getroot()
+        fonts = {font.attrib["id"]: font.attrib for font in root.iter("fontspec")}
+        pages = root.findall("page")
+        for page in pages[:2]:
+            rows = [node for node in page.findall("text") if "测测测测" in "".join(node.itertext())]
+            self.assertEqual(len(rows), 30)
+            self.assertEqual({len("".join(row.itertext())) for row in rows}, {33})
+            for node in page.findall("text"):
+                if int(node.attrib["top"]) > 700 and "".join(node.itertext()).isdigit():
+                    self.assertIn("FandolSong", fonts[node.attrib["font"]]["family"])
+                    self.assertEqual(fonts[node.attrib["font"]]["size"], "9")
+        expected = {
+            "一级标题测量": ("FZXBSJW", "22"),
+            "二级标题测量": ("FandolHei", "15"),
+            "三级标题测量": ("FandolHei", "12"),
+            "正文测量": ("FandolSong", "12"),
+            "表题测量": ("FandolHei", "11"),
+            "表格内容": ("FandolSong", "11"),
+            "图题测量": ("FandolSong", "11"),
+            "注：表注测量": ("FandolSong", "9"),
+        }
+        for label, (family, size) in expected.items():
+            nodes = [node for node in root.iter("text") if label in "".join(node.itertext())]
+            self.assertEqual(len(nodes), 1, label)
+            self.assertIn(family, fonts[nodes[0].attrib["font"]]["family"])
+            # pdftohtml rounds 10.5 to 11; a four-character width verifies 10.5 exactly.
+            self.assertEqual(fonts[nodes[0].attrib["font"]]["size"], size)
+            if label == "表格内容":
+                self.assertEqual(nodes[0].attrib["width"], "42")
 
 
 if __name__ == "__main__":

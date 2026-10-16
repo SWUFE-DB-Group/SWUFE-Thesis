@@ -2,6 +2,16 @@
 
 修改自[上海交通大学论文](https://github.com/sjtug/sjtuthesis)模板，适用于西南财经大学硕士论文的撰写。
 
+## 格式依据与符合情况
+
+格式要求参考西南财经大学研究生院发布的[《西南财经大学关于研究生学位论文形式与格式的基本要求》](https://graduate.swufe.edu.cn/info/1036/2142.htm)。该网页发布于 2018-11-13，正文注明“2007年3月修订”，并附有“2019年5月调整”的 Word 文件。
+
+模板的五项印刷格式设置集中在 [`swufe-layout.tex`](swufe-layout.tex)：A4；正文上、下、左、右边距分别为 3.9、3.4、3.45、3.45 cm；小四号宋体，以 1.37 倍率校准到每页 30 行、每行 33 个全角汉字；一级标题二号方正小标宋、二级小三号黑体、三级小四号黑体；图表五号、表题黑体、内容宋体、表注小五号宋体；页眉页脚小五号宋体，奇偶页页眉不同。
+
+页眉框顶边距纸顶 2.8 cm，页码基线距纸底 2.5 cm。封面使用独立版心；含标题、图表、公式或段落留白的页面不要求实际填满 30 行。2026-10-16 的回归检查已验证连续正文页面为 **30 行 × 33 字**，同时核对了正文、标题、图表和页码的字体字号。具体实测值、参数定义和核查范围见[排版核查记录](docs/layout-audit.md)。
+
+`font/方正小标宋简体.ttf` 用于一级标题，来源为[提供的字体仓库](https://github.com/genqiaolynn/fonts/blob/master/%E6%96%B9%E6%AD%A3%E5%B0%8F%E6%A0%87%E5%AE%8B%E7%AE%80%E4%BD%93.ttf)；`STZHONGS.TTF` 是内封使用的华文中宋。四个 Times New Roman 文件用于西文。正文宋体、黑体以及页眉页码使用的宋体由 TeX Live 的 Fandol 字体提供。
+
 ## 编译环境与版本要求
 
 本项目已适配 **SJTUTeX 2.3.1（2026-02-26）**，最低要求为该版本，使用 **XeLaTeX** 编译。推荐使用 **TeX Live 2026**；使用其他发行版时，请确认已安装 `sjtutex` 2.3.1 或更新版本，以及 `jsonparse` 等依赖宏包。当前验证环境为 TeX Live 2026 / SJTUTeX 2.3.1；更新版本仍需确认兼容性。
@@ -20,7 +30,7 @@ tlmgr update sjtutex jsonparse
 
 编译日志开头应显示 `Document Class: sjtuthesis ... 2.3.1 ...`（或更新版本）。从旧版项目迁移时，请移除旧的 `texmf/` 和自定义 `TEXINPUTS` 搜索配置，避免旧文档类覆盖发行版中的版本。摘要与目录已使用 2.3.1 的接口：`abstract` 环境（如 `[lang=zh,notintoc]`）和 `\tableofcontents[notintoc]`。
 
-修改模板后，可运行 `python3 -m unittest discover -s tests -v` 检查 JSON 配置、`setup.tex` 回退配置、终稿与盲审模式、封面标题及旧版本检测。检查需要 Python 3、XeLaTeX、`latexmk` 和 Poppler 的 `pdfinfo`、`pdftotext`，会在临时目录中编译，不修改论文内容。
+修改模板后，可运行 `python3 -m unittest discover -s tests -v` 检查 JSON 配置、`setup.tex` 回退配置、终稿与盲审模式、封面标题、版心恢复、30 行 × 33 字、字体字号及旧版本检测。检查需要 Python 3、XeLaTeX、`latexmk` 和 Poppler 的 `pdfinfo`、`pdftotext`、`pdftohtml`，会在临时目录中编译，不修改论文内容。
 
 ## 获取模板
 
@@ -36,7 +46,7 @@ git clone https://github.com/SWUFE-DB-Group/SWUFE-Thesis.git
 
 使用 Overleaf 在线编译时，请按以下步骤操作：
 
-1. 将项目源文件打包为 ZIP，保留根目录下的 `main.tex`、`setup.tex`、`config.json`，以及完整的 `contents/`、`figures/`、`font/`、`img/` 目录。
+1. 将项目源文件打包为 ZIP，保留根目录下的 `main.tex`、`setup.tex`、`swufe-layout.tex`、`config.json`，以及完整的 `contents/`、`figures/`、`font/`、`img/` 目录。
 2. 在 Overleaf 中选择 **New Project → Upload Project**，上传 ZIP。上传后确认 `main.tex` 位于在线项目根目录。
 3. 在项目设置中，将 **Main document** 设为 `main.tex`，将 **Compiler** 设为 **XeLaTeX**，将 **TeX Live version** 设为 **2026**（[Overleaf 已提供 TeX Live 2026](https://www.overleaf.com/blog/tex-live-2026-is-now-available)）。该流程直接使用平台安装的 SJTUTeX，无需上传 `texmf/` 或创建、重命名 `latexmkrc`；项目中的 `.latexmkrc` 用于本地 `latexmk` 编译。
 4. 修改 `config.json` 中的论文信息和 `contents/` 中的论文内容，点击 **Recompile**，编译完成后下载 PDF。若提示 `SJTUTeX 2.3.1 or newer is required`，请检查 TeX Live 版本，并确认在线项目中没有残留的旧版文档类。
