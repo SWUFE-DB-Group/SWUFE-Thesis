@@ -10,7 +10,7 @@
 
 页眉框顶边距纸顶 2.8 cm，页码基线距纸底 2.5 cm。封面使用独立版心；含标题、图表、公式或段落留白的页面不要求实际填满 30 行。2026-10-16 的回归检查已验证连续正文页面为 **30 行 × 33 字**，同时核对了正文、标题、图表和页码的字体字号。具体实测值、参数定义和核查范围见[排版核查记录](docs/layout-audit.md)。
 
-`font/方正小标宋简体.ttf` 用于一级标题，来源为[提供的字体仓库](https://github.com/genqiaolynn/fonts/blob/master/%E6%96%B9%E6%AD%A3%E5%B0%8F%E6%A0%87%E5%AE%8B%E7%AE%80%E4%BD%93.ttf)；`STZHONGS.TTF` 是内封使用的华文中宋。四个 Times New Roman 文件用于西文。正文宋体、黑体以及页眉页码使用的宋体由 TeX Live 的 Fandol 字体提供。
+`font/FZXiaoBiaoSong.ttf` 用于一级标题，来源为[提供的字体仓库](https://github.com/genqiaolynn/fonts/blob/master/%E6%96%B9%E6%AD%A3%E5%B0%8F%E6%A0%87%E5%AE%8B%E7%AE%80%E4%BD%93.ttf)；`STZHONGS.TTF` 是内封使用的华文中宋。四个 Times New Roman 文件用于西文。正文宋体、黑体以及页眉页码使用的宋体由 TeX Live 的 Fandol 字体提供。
 
 ## 编译环境与版本要求
 

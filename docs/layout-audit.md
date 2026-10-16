@@ -56,7 +56,7 @@ FandolSong、FandolHei 分别属于宋体、黑体类别，随 TeX Live 提供�
 
 五号字为 10.5 点；Poppler 的 `pdftohtml` 会将其字体大小四舍五入为 11，因此检查同时验证四个连续汉字的宽度为 42 点，避免将取整后的数字误认为实际字号。
 
-一级标题使用 [`font/方正小标宋简体.ttf`](../font/方正小标宋简体.ttf)，来源为[提供的字体仓库](https://github.com/genqiaolynn/fonts/blob/master/%E6%96%B9%E6%AD%A3%E5%B0%8F%E6%A0%87%E5%AE%8B%E7%AE%80%E4%BD%93.ttf)。字体内部名称为 `FZXiaoBiaoSong-B05S`，PDF 内嵌名称包含 `FZXBSJW--GB1-0`；文件 SHA-256 为 `c52d577dd3aa719ef5fb9ff2043b7f7ca36fae468ef34a47628a3a555d006a49`。
+一级标题使用 [`font/FZXiaoBiaoSong.ttf`](../font/FZXiaoBiaoSong.ttf)，来源为[提供的字体仓库](https://github.com/genqiaolynn/fonts/blob/master/%E6%96%B9%E6%AD%A3%E5%B0%8F%E6%A0%87%E5%AE%8B%E7%AE%80%E4%BD%93.ttf)。字体内部名称为 `FZXiaoBiaoSong-B05S`，PDF 内嵌名称包含 `FZXBSJW--GB1-0`；文件 SHA-256 为 `c52d577dd3aa719ef5fb9ff2043b7f7ca36fae468ef34a47628a3a555d006a49`。
 
 ## 复验方法
 
