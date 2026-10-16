@@ -14,7 +14,13 @@ git clone https://github.com/SWUFE-DB-Group/SWUFE-Thesis.git
 
 ### Overleaf
 
-您可以下载最新版压缩包，然后上传至Overleaf等平台。请注意，Overleaf 默认使用 pdflatex 编译，您需要设置使用 XeLaTeX 编译器。
+使用 Overleaf 在线编译时，请按以下步骤操作：
+
+1. 将项目源文件打包为 ZIP，保留根目录下的 `main.tex`、`setup.tex`、`config.json`、`.latexmkrc`，以及完整的 `contents/`、`figures/`、`font/`、`texmf/` 目录。注意 `.latexmkrc` 是隐藏文件，打包时不要遗漏。
+2. 在 Overleaf 中选择 **New Project → Upload Project**，上传 ZIP。上传后确认 `main.tex` 位于在线项目根目录。
+3. 在在线项目根目录，将 `.latexmkrc` 重命名为 `latexmkrc`（去掉开头的点，不添加扩展名），保留其内容。其中的 `TEXINPUTS` 设置会让编译器搜索项目自带的 `texmf/` 目录，加载本模板的文档类和配置文件。`latexmkrc` 必须与 `main.tex` 位于同一根目录；详见 [Overleaf 官方说明](https://docs.overleaf.com/managing-projects-and-files/adding-latex-dependencies)。
+4. 在项目设置中，将 **Main document** 设为 `main.tex`，将 **Compiler** 设为 **XeLaTeX**，并选择平台提供的较新 **TeX Live** 版本，以支持模板使用的 `jsonparse` 等宏包。
+5. 修改 `config.json` 中的论文信息和 `contents/` 中的论文内容，点击 **Recompile**，编译完成后下载 PDF。
 
 ## 模板使用
 
