@@ -3,6 +3,11 @@
 % =========================================================
 % 西南财经大学学位论文宏包配置与元数据扩展
 % =========================================================
+\IfClassAtLeastTF{sjtuthesis}{2026/02/26}{}{%
+  \PackageError{swufethesis}{SJTUTeX 2.3.1 or newer is required}%
+    {Update the sjtutex package in your TeX distribution.\MessageBreak
+     On Overleaf, select TeX Live 2026 or newer.}%
+}
 \ExplSyntaxOn
 
 % 盲审与封面扩展键值定义
@@ -35,6 +40,10 @@
     final-date              .tl_set:N    = \l__swufe_info_final_date_tl ,
     zh / final-date         .tl_set:N    = \l__swufe_info_final_date_tl ,
   }
+
+% 2.3.1 的 base 预设会自动转换英文封面标题大小写；本模板保留用户原文。
+\keys_define:nn { sjtu / info / en }
+  { display-title .tl_set:c = l__sjtu_info_display_title_en_tl }
 
 % 别名 \swufesetup
 \cs_set_eq:NN \swufesetup \sjtusetup
@@ -97,6 +106,11 @@
 \ctex_at_end_preamble:n
   {
     \__swufe_sync_review_status:
+    % 2.3.1 的敏感字段过滤在载入文档类时确定，而 JSON 模式在之后读取。
+    % 因此根据最终模式同步 PDF 作者，避免在盲审 PDF 元数据中保留姓名。
+    \bool_if:NTF \g__sjtu_review_bool
+      { \cs_set:cpn { @author } { } }
+      { \cs_set:cpn { @author } { \swufeauthor } }
   }
 \ExplSyntaxOff
 
@@ -126,6 +140,8 @@
   % 信息录入（封面一、封面二及论文全局信息由此统一读取）
   %
   info = {%
+    zh / subject         = {西南财经大学学位论文},
+    en / subject         = {SWUFE Thesis},
     %
     % 标题
     %
@@ -232,13 +248,21 @@
 % =========================================================
 \file_if_exist:nT { config.json }
   {
+    % JSON 中的 LaTeX 命令需要重新分词；保留英文标题、姓名中的普通空格。
+    \cs_new_protected:Npn \__swufe_load_json_rescan:n #1
+      {
+        \group_begin:
+          \char_set_catcode_space:n { 32 }
+          \JSONParseSetRescanValue \l_tmpa_tl \swufeJsonData {#1}
+          \exp_args:NNNV \group_end: \tl_set:Nn \l_tmpa_tl \l_tmpa_tl
+      }
     \cs_new_protected:Npn \__swufe_load_json_val:nn #1#2
       {
         \clist_map_inline:nn {#2}
           {
             \prop_if_in:NnT \swufeJsonData {##1}
               {
-                \JSONParseSetRescanValue \l_tmpa_tl \swufeJsonData {##1}
+                \__swufe_load_json_rescan:n {##1}
                 \tl_if_empty:NF \l_tmpa_tl
                   {
                     \keys_set:nx { sjtu / info } { #1 = { \exp_not:V \l_tmpa_tl } }
@@ -252,7 +276,7 @@
           {
             \prop_if_in:NnT \swufeJsonData {##1}
               {
-                \JSONParseSetRescanValue \l_tmpa_tl \swufeJsonData {##1}
+                \__swufe_load_json_rescan:n {##1}
                 \tl_if_empty:NF \l_tmpa_tl
                   {
                     \keys_set:nx { sjtu } { #1 = \tl_use:N \l_tmpa_tl }

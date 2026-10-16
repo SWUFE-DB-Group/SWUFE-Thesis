@@ -6,9 +6,7 @@
 # Set timezone.
 $ENV{'TZ'} = 'Asia/Shanghai';
 
-# Prepended local directories to the search paths.
-ensure_path( 'TEXINPUTS', './texmf//' );
-# ensure_path( 'OSFONTDIR', './texmf/fonts//' );
+# SJTUTeX is provided by the TeX distribution (2.3.1 or newer).
 
 # PDF generate method:
 #   - 1 pdfLaTeX

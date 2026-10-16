@@ -2,6 +2,26 @@
 
 修改自[上海交通大学论文](https://github.com/sjtug/sjtuthesis)模板，适用于西南财经大学硕士论文的撰写。
 
+## 编译环境与版本要求
+
+本项目已适配 **SJTUTeX 2.3.1（2026-02-26）**，最低要求为该版本，使用 **XeLaTeX** 编译。推荐使用 **TeX Live 2026**；使用其他发行版时，请确认已安装 `sjtutex` 2.3.1 或更新版本，以及 `jsonparse` 等依赖宏包。当前验证环境为 TeX Live 2026 / SJTUTeX 2.3.1；更新版本仍需确认兼容性。
+
+[SJTUTeX 已被 CTAN 收录，并由 TeX Live、MiKTeX 分发](https://ctan.org/pkg/sjtutex)。本项目直接使用发行版安装的文档类，不再附带旧版 `texmf/`，也不需要配置本地 `TEXINPUTS`。西财专用的封面、格式与 JSON 配置仍由本项目提供，`font/`、`figures/` 和示例正文引用的 `img/` 目录仍需完整保留。
+
+使用 TeX Live 官方安装器安装的环境，可通过以下命令安装或更新依赖：
+
+```bash
+tlmgr update --self
+tlmgr install sjtutex jsonparse
+tlmgr update sjtutex jsonparse
+```
+
+若 TeX Live 由操作系统包管理器安装，请通过对应包管理器安装或更新；MiKTeX 用户可在 MiKTeX Console 中安装并更新宏包。
+
+编译日志开头应显示 `Document Class: sjtuthesis ... 2.3.1 ...`（或更新版本）。从旧版项目迁移时，请移除旧的 `texmf/` 和自定义 `TEXINPUTS` 搜索配置，避免旧文档类覆盖发行版中的版本。摘要与目录已使用 2.3.1 的接口：`abstract` 环境（如 `[lang=zh,notintoc]`）和 `\tableofcontents[notintoc]`。
+
+修改模板后，可运行 `python3 -m unittest discover -s tests -v` 检查 JSON 配置、`setup.tex` 回退配置、终稿与盲审模式、封面标题及旧版本检测。检查需要 Python 3、XeLaTeX、`latexmk` 和 Poppler 的 `pdfinfo`、`pdftotext`，会在临时目录中编译，不修改论文内容。
+
 ## 获取模板
 
 ### 下载模版
@@ -16,15 +36,14 @@ git clone https://github.com/SWUFE-DB-Group/SWUFE-Thesis.git
 
 使用 Overleaf 在线编译时，请按以下步骤操作：
 
-1. 将项目源文件打包为 ZIP，保留根目录下的 `main.tex`、`setup.tex`、`config.json`、`.latexmkrc`，以及完整的 `contents/`、`figures/`、`font/`、`texmf/` 目录。注意 `.latexmkrc` 是隐藏文件，打包时不要遗漏。
+1. 将项目源文件打包为 ZIP，保留根目录下的 `main.tex`、`setup.tex`、`config.json`，以及完整的 `contents/`、`figures/`、`font/`、`img/` 目录。
 2. 在 Overleaf 中选择 **New Project → Upload Project**，上传 ZIP。上传后确认 `main.tex` 位于在线项目根目录。
-3. 在在线项目根目录，将 `.latexmkrc` 重命名为 `latexmkrc`（去掉开头的点，不添加扩展名），保留其内容。其中的 `TEXINPUTS` 设置会让编译器搜索项目自带的 `texmf/` 目录，加载本模板的文档类和配置文件。`latexmkrc` 必须与 `main.tex` 位于同一根目录；详见 [Overleaf 官方说明](https://docs.overleaf.com/managing-projects-and-files/adding-latex-dependencies)。
-4. 在项目设置中，将 **Main document** 设为 `main.tex`，将 **Compiler** 设为 **XeLaTeX**，并选择平台提供的较新 **TeX Live** 版本，以支持模板使用的 `jsonparse` 等宏包。
-5. 修改 `config.json` 中的论文信息和 `contents/` 中的论文内容，点击 **Recompile**，编译完成后下载 PDF。
+3. 在项目设置中，将 **Main document** 设为 `main.tex`，将 **Compiler** 设为 **XeLaTeX**，将 **TeX Live version** 设为 **2026**（[Overleaf 已提供 TeX Live 2026](https://www.overleaf.com/blog/tex-live-2026-is-now-available)）。该流程直接使用平台安装的 SJTUTeX，无需上传 `texmf/` 或创建、重命名 `latexmkrc`；项目中的 `.latexmkrc` 用于本地 `latexmk` 编译。
+4. 修改 `config.json` 中的论文信息和 `contents/` 中的论文内容，点击 **Recompile**，编译完成后下载 PDF。若提示 `SJTUTeX 2.3.1 or newer is required`，请检查 TeX Live 版本，并确认在线项目中没有残留的旧版文档类。
 
 ## 模板使用
 
-如果你不熟悉 LaTeX 的编译流程，请**不要**直接使用编译器进行编译。针对不同的平台，模版提供了相应的编译脚本。在编译前，需要安装最新的 TeXLive 发行版。
+如果你不熟悉 LaTeX 的编译流程，推荐使用下列编译工具和脚本，以自动处理交叉引用与多轮编译。编译前请满足上述版本要求。
 
 ### VSCode 用户
 
