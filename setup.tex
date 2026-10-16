@@ -10,8 +10,9 @@
 }
 \ExplSyntaxOn
 
-% 盲审与封面扩展键值定义
+% 论文模式、引用与封面扩展键值定义
 \bool_new:N \l__swufe_hide_coverone_in_review_bool
+\bool_new:N \l__swufe_citation_superscript_bool
 \tl_new:N   \l__swufe_info_classification_tl
 \tl_new:N   \l__swufe_info_secret_level_tl
 \tl_new:N   \l__swufe_info_udc_tl
@@ -22,12 +23,14 @@
   {
     review                  .bool_gset:N = \g__sjtu_review_bool ,
     hide-coverone-in-review .bool_set:N  = \l__swufe_hide_coverone_in_review_bool ,
+    citation-superscript    .bool_set:N  = \l__swufe_citation_superscript_bool ,
   }
 
 \keys_define:nn { sjtu / style }
   {
     review                  .bool_gset:N = \g__sjtu_review_bool ,
     hide-coverone-in-review .bool_set:N  = \l__swufe_hide_coverone_in_review_bool ,
+    citation-superscript    .bool_set:N  = \l__swufe_citation_superscript_bool ,
   }
 
 \keys_define:nn { sjtu / info }
@@ -130,6 +133,8 @@
   %   true         : 盲审时不输出封面一，直接从封面二（内封扉页）开始
   %
   hide-coverone-in-review = false,
+  % 引用编号是否使用上标：false 为正文大小的方括号编号，true 为上标。
+  citation-superscript    = false,
   %
   %******************************
   % 注意：
@@ -293,6 +298,7 @@
     % 模式控制
     \__swufe_load_json_bool:nn { review } { {review} }
     \__swufe_load_json_bool:nn { hide-coverone-in-review } { {hide_coverone_in_review}, {hide-coverone-in-review} }
+    \__swufe_load_json_bool:nn { citation-superscript } { {citation_superscript}, {citation-superscript} }
 
     % 标题与关键词
     \tl_clear:c { l__sjtu_info_display_title_zh_tl }
@@ -348,7 +354,16 @@
 
 % \usepackage[backend=biber,style=gb7714-2015]{biblatex}
 
-\usepackage[super,square]{natbib}
+% 默认平排、逗号分隔；同组编号排序，并将三个及以上连续编号压缩为范围。
+\usepackage[numbers,square,comma,sort&compress]{natbib}
+\ExplSyntaxOn
+\ctex_at_end_preamble:n
+  {
+    \bool_if:NTF \l__swufe_citation_superscript_bool
+      { \setcitestyle{super,square,comma} }
+      { \setcitestyle{numbers,square,comma} }
+  }
+\ExplSyntaxOff
 % 脚注格式
 \usepackage[perpage,bottom,hang]{footmisc}
 
@@ -665,7 +680,6 @@
 % hyperref 宏包在最后调用
 \usepackage{hyperref}
 
-% \usepackage[super,square]{natbib}
 
 % \usepackage{float}
 % \usepackage{caption}

@@ -1,6 +1,7 @@
 {
   "review": false,
   "hide_coverone_in_review": false,
+  "citation_superscript": false,
   "info": {
     "title": {
       "zh": "西南财经大学学位论文 \\LaTeX{} 模板示例文档",

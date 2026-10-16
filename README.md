@@ -30,7 +30,7 @@ tlmgr update sjtutex jsonparse
 
 编译日志开头应显示 `Document Class: sjtuthesis ... 2.3.1 ...`（或更新版本）。从旧版项目迁移时，请移除旧的 `texmf/` 和自定义 `TEXINPUTS` 搜索配置，避免旧文档类覆盖发行版中的版本。摘要与目录已使用 2.3.1 的接口：`abstract` 环境（如 `[lang=zh,notintoc]`）和 `\tableofcontents[notintoc]`。
 
-修改模板后，可运行 `python3 -m unittest discover -s tests -v` 检查 JSON 配置、`setup.tex` 回退配置、终稿与盲审模式、封面标题、版心恢复、30 行 × 33 字、字体字号及旧版本检测。检查需要 Python 3、XeLaTeX、`latexmk` 和 Poppler 的 `pdfinfo`、`pdftotext`、`pdftohtml`，会在临时目录中编译，不修改论文内容。
+修改模板后，可运行 `python3 -m unittest discover -s tests -v` 检查 JSON 配置、`setup.tex` 回退配置、终稿与盲审模式、封面标题、版心恢复、30 行 × 33 字、字体字号、引用风格及编号排序压缩、旧版本检测。检查需要 Python 3、XeLaTeX、`latexmk` 和 Poppler 的 `pdfinfo`、`pdftotext`、`pdftohtml`，会在临时目录中编译，不修改论文内容。
 
 ## 获取模板
 
@@ -98,6 +98,7 @@ make wordcount                # 论文字数统计
 {
   "review": false,
   "hide_coverone_in_review": false,
+  "citation_superscript": false,
   "info": {
     "title": {
       "zh": "西南财经大学学位论文 \\LaTeX{} 模板示例文档",
@@ -196,4 +197,20 @@ _注：亦可在 [main.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-
 | **原创与版权声明页**   | 正常输出带签名的声明页      | 自动略过不输出（防止手写签名泄密）                                                                 |
 | **致谢**               | 正常输出                    | 自动略过不输出（防止致谢内容泄密）                                                                 |
 | **页眉与成果目录**     | 正常输出                    | 页眉自动读取论文标题，成果目录保持规范匿名格式                                                     |
+
+### 4. 引用编号风格
+
+默认使用与正文同一基线的方括号数字引用，如 `[1]`、`[1,3]`。同一组引用会按编号排序，三个及以上连续编号自动压缩为横线范围，如 `[1–3]`、`[1–3,5]`；两个连续编号仍显示为 `[1,2]`。两种风格都使用逗号分隔，并支持连续编号压缩。
+
+在 `config.json` 根层设置 `"citation_superscript": false`（默认）使用平排引用，改为 `true` 使用上标引用。未填写此键时，沿用 `setup.tex` 中的设置，模板默认值为 `false`。
+
+若不使用 JSON，可在 `setup.tex` 的 `\sjtusetup{...}` 中设置：
+
+```latex
+\sjtusetup{
+  citation-superscript = false, % true 为上标引用
+}
+```
+
+存在 JSON 且填写了 `citation_superscript` 时，以 JSON 为准。正文继续使用 `\cite{文献键}` 或 `\cite{文献键一,文献键二,...}`，不需要手动改写编号或范围。
 

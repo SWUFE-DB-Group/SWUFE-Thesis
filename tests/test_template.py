@@ -162,6 +162,83 @@ class TemplateTests(unittest.TestCase):
         )
         self.assertIn("SJTUTeX 2.3.1 or newer is required", self.build(succeeds=False))
 
+    def assert_citation_output(self, superscript=False, config=True):
+        (self.project / "main.tex").write_text(r"""\documentclass[type=master,openany,oneside,cjk-font=fandol,baselineskip=false]{sjtuthesis}
+\input{setup}
+\begin{document}
+\noindent Style \cite{a}.\par
+\noindent Comma \cite{e,a,c}.\par
+\noindent Pair \cite{b,a}.\par
+\noindent Range \cite{c,a,b}.\par
+\noindent Mixed \cite{e,c,a,b}.\par
+\clearpage
+\begin{thebibliography}{5}
+\bibitem{a} Reference A.
+\bibitem{b} Reference B.
+\bibitem{c} Reference C.
+\bibitem{d} Reference D.
+\bibitem{e} Reference E.
+\end{thebibliography}
+\end{document}
+""")
+        self.build(config=config, thesis=False)
+        text = re.sub(r"\s", "", self.pages[0])
+        for expected in ("Style[1].", "Comma[1,3,5].", "Pair[1,2].",
+                         "Range[1–3].", "Mixed[1–3,5]."):
+            self.assertIn(expected, text)
+        self.assertNotIn(";", text)
+        xml = self.project / "citations.xml"
+        subprocess.run(
+            ["pdftohtml", "-xml", "-i", "-hidden", "-zoom", "1",
+             str(self.project / "main.pdf"), str(xml)],
+            check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+        root = ET.parse(xml).getroot()
+        fonts = {font.attrib["id"]: font.attrib for font in root.iter("fontspec")}
+        nodes = root.find("page").findall("text")
+        marker = next(node for node in nodes if "Style" in "".join(node.itertext()))
+        citation = next(node for node in nodes if "[1]" in "".join(node.itertext()))
+        self.assertEqual(fonts[citation.attrib["font"]]["size"], "8" if superscript else "12")
+        if superscript:
+            # Compare lower edges: smaller raised glyphs can share the body's top edge.
+            self.assertLess(
+                int(citation.attrib["top"]) + int(citation.attrib["height"]),
+                int(marker.attrib["top"]) + int(marker.attrib["height"]) - 2,
+            )
+        else:
+            self.assertEqual(citation.attrib["top"], marker.attrib["top"])
+
+    def enable_setup_superscript(self):
+        path = self.project / "setup.tex"
+        path.write_text(path.read_text().replace(
+            "citation-superscript    = false,", "citation-superscript    = true,"
+        ))
+
+    def test_citation_json_default_without_key(self):
+        self.config.pop("citation_superscript")
+        self.assert_citation_output()
+
+    def test_citation_json_superscript(self):
+        self.config["citation_superscript"] = True
+        self.assert_citation_output(superscript=True)
+
+    def test_citation_json_false_overrides_setup(self):
+        self.enable_setup_superscript()
+        self.config["citation_superscript"] = False
+        self.assert_citation_output()
+
+    def test_citation_json_missing_key_preserves_setup(self):
+        self.enable_setup_superscript()
+        self.config.pop("citation_superscript")
+        self.assert_citation_output(superscript=True)
+
+    def test_citation_setup_default(self):
+        self.assert_citation_output(config=False)
+
+    def test_citation_setup_superscript(self):
+        self.enable_setup_superscript()
+        self.assert_citation_output(superscript=True, config=False)
+
     LAYOUT_PROBE = r"""
 \makeatletter
 \newcommand{\swufelayoutprobe}{%
