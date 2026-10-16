@@ -119,6 +119,9 @@
 }
 \appto\TPTnoteSettings{\swufetablenotefont}
 
+% 参考文献保留小四字号与正文行距，仅去掉列表额外的条目间留白。
+\setlength{\bibsep}{0pt}
+
 % 封面不属于正文版心；独立布局避免长标题只将最后一个字挤到下一行。
 \newcommand{\swufecovergeometry}{%
   \newgeometry{top=2.8cm,bottom=3cm,left=2.75cm,right=2.75cm,bindingoffset=0pt}%

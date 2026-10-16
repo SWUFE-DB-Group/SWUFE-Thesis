@@ -214,3 +214,5 @@ _注：亦可在 [main.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-
 
 存在 JSON 且填写了 `citation_superscript` 时，以 JSON 为准。正文继续使用 `\cite{文献键}` 或 `\cite{文献键一,文献键二,...}`，不需要手动改写编号或范围。
 
+参考文献列表保留小四字号和正文校准后的 1.37 倍行距，条目间不再额外加空白（`\bibsep=0pt`）。相邻条目与条目内换行使用一致的行距，相关设置集中在 `swufe-layout.tex`。
+
