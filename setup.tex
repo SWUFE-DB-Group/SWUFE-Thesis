@@ -665,7 +665,19 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=newest}
 
-\setCJKfamilyfont{zhongsong}[Path=font/]{STZHONGS.TTF}
+\IfFileExists{font/STZHONGS.TTF}{%
+  \setCJKfamilyfont{zhongsong}[Path=font/]{STZHONGS.TTF}%
+}{%
+  \IfFontExistsTF{STZhongsong}{%
+    \setCJKfamilyfont{zhongsong}{STZhongsong}%
+  }{%
+    \IfFontExistsTF{华文中宋}{%
+      \setCJKfamilyfont{zhongsong}{华文中宋}%
+    }{%
+      \setCJKfamilyfont{zhongsong}{FandolSong-Regular.otf}%
+    }%
+  }%
+}
 \newcommand{\zhongsong}{\CJKfamily{zhongsong}}
 
 % 一些文档中用到的 logo

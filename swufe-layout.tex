@@ -35,18 +35,55 @@
   \setlength{\parindent}{2\ccwd}%
 }
 
-% 西文字体仍使用模板自带的 Times New Roman 四种字形。
-\setmainfont[
-  Path=font/,
-  UprightFont={Times New Roman.ttf},
-  BoldFont={Times New Roman Bold.ttf},
-  ItalicFont={Times New Roman Italic.ttf},
-  BoldItalicFont={Times New Roman Bold Italic.ttf}
-]{}
+% 字体依次使用项目文件、系统同名字体和 TeX Live 替代字体。
+% 四种字形齐全才使用项目内的西文字体，避免部分文件缺失时中断编译。
+\newif\ifswufeprojecttimes
+\swufeprojecttimestrue
+\IfFileExists{font/Times New Roman.ttf}{}{\swufeprojecttimesfalse}
+\IfFileExists{font/Times New Roman Bold.ttf}{}{\swufeprojecttimesfalse}
+\IfFileExists{font/Times New Roman Italic.ttf}{}{\swufeprojecttimesfalse}
+\IfFileExists{font/Times New Roman Bold Italic.ttf}{}{\swufeprojecttimesfalse}
+\ifswufeprojecttimes
+  \setmainfont[
+    Path=font/,
+    UprightFont={Times New Roman.ttf},
+    BoldFont={Times New Roman Bold.ttf},
+    ItalicFont={Times New Roman Italic.ttf},
+    BoldItalicFont={Times New Roman Bold Italic.ttf}
+  ]{}%
+\else
+  \IfFontExistsTF{Times New Roman}{%
+    \setmainfont{Times New Roman}%
+  }{%
+    % 按文件名交给 TeX 查找，不依赖系统是否注册 TeX Gyre 字体名称。
+    \setmainfont[
+      Extension=.otf,
+      UprightFont=*-regular,
+      BoldFont=*-bold,
+      ItalicFont=*-italic,
+      BoldItalicFont=*-bolditalic
+    ]{texgyretermes}%
+  }%
+\fi
 
-% 一级标题使用真正的小标宋；华文中宋仅用于内封，不作为替代字体。
-\newfontfamily\swufexbslatin[Path=font/]{FZXiaoBiaoSong.ttf}
-\setCJKfamilyfont{swufexbs}[Path=font/]{FZXiaoBiaoSong.ttf}
+% TeX Live 未提供小标宋；项目文件和系统同名字体均缺失时以 FandolSong 近似。
+\IfFileExists{font/FZXiaoBiaoSong.ttf}{%
+  \newfontfamily\swufexbslatin[Path=font/]{FZXiaoBiaoSong.ttf}%
+  \setCJKfamilyfont{swufexbs}[Path=font/]{FZXiaoBiaoSong.ttf}%
+}{%
+  \IfFontExistsTF{FZXiaoBiaoSong-B05S}{%
+    \newfontfamily\swufexbslatin{FZXiaoBiaoSong-B05S}%
+    \setCJKfamilyfont{swufexbs}{FZXiaoBiaoSong-B05S}%
+  }{%
+    \IfFontExistsTF{方正小标宋简体}{%
+      \newfontfamily\swufexbslatin{方正小标宋简体}%
+      \setCJKfamilyfont{swufexbs}{方正小标宋简体}%
+    }{%
+      \newfontfamily\swufexbslatin{FandolSong-Regular.otf}%
+      \setCJKfamilyfont{swufexbs}{FandolSong-Regular.otf}%
+    }%
+  }%
+}
 \newcommand{\swufexiaobiaosong}{\swufexbslatin\CJKfamily{swufexbs}}
 
 \ctexset{
