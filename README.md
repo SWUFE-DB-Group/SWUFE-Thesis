@@ -2,7 +2,7 @@
 
 修改自[上海交通大学论文](https://github.com/sjtug/sjtuthesis)模板，适用于西南财经大学硕士论文的撰写。
 
-**[查看示例 PDF](example.pdf)**：可在 GitHub 中预览或下载，查看封面、正文、图表和参考文献的排版效果。示例由当前模板编译生成；更新示例时，运行 `make all` 后将 `main.pdf` 复制为 `example.pdf`。
+**[查看示例 PDF](https://github.com/SWUFE-DB-Group/SWUFE-Thesis/blob/main/example.pdf)**：可在 GitHub 中预览或下载，查看封面、正文、图表和参考文献的排版效果。示例由当前模板编译生成；更新示例时，运行 `make all` 后将 `main.pdf` 复制为 `example.pdf`。
 
 ## 格式依据与符合情况
 
@@ -37,6 +37,17 @@ tlmgr update sjtutex jsonparse
 修改模板后，可运行 `python3 -m unittest discover -s tests -v` 检查 JSON 配置、`setup.tex` 回退配置、终稿与盲审模式、封面标题、版心恢复、30 行 × 33 字、字体字号、引用风格及编号排序压缩、旧版本检测。检查需要 Python 3、XeLaTeX、`latexmk` 和 Poppler 的 `pdfinfo`、`pdftotext`、`pdftohtml`，会在临时目录中编译，不修改论文内容。Linux 环境安装了 fontconfig 的 `fc-match` 时，还会检查无项目及系统字体、项目西文字体文件不完整，以及系统同名字体回退三种情形。
 
 ## 获取模板
+
+### 下载发布版本
+
+[GitHub Releases](https://github.com/SWUFE-DB-Group/SWUFE-Thesis/releases) 提供两种 ZIP：
+
+| 文件名后缀 | 内容 |
+| --- | --- |
+| `-with-font.zip` | 模板源码、编译脚本和完整的 `font/`，保留示例使用的字体 |
+| `-without-font.zip` | 相同的模板源码和编译脚本，省略 `font/`，使用系统同名字体或 TeX 发行版替代字体 |
+
+两个 ZIP 均保留 `main.tex`、`setup.tex`、`swufe-layout.tex`、`config.json`、`refs.bib`、`contents/`、`figures/`、`img/`、`docs/`、使用说明和许可证。`main.tex` 位于 ZIP 根目录，可直接上传 Overleaf。ZIP 不包含示例 PDF、编译产物、测试及工作流文件；字体回退的效果及终稿使用限制见上文。
 
 ### 下载模版
 
@@ -219,4 +230,27 @@ _注：亦可在 [main.tex](file:///run/media/zhongpu/DATA/projects/latex/SWUFE-
 存在 JSON 且填写了 `citation_superscript` 时，以 JSON 为准。正文继续使用 `\cite{文献键}` 或 `\cite{文献键一,文献键二,...}`，不需要手动改写编号或范围。
 
 参考文献列表保留小四字号和正文校准后的 1.37 倍行距，条目间不再额外加空白（`\bibsep=0pt`）。相邻条目与条目内换行使用一致的行距，相关设置集中在 `swufe-layout.tex`。
+
+## 发布版本
+
+`.github/workflows/release.yml` 在推送任意 tag 时触发，为该 tag 创建一个 GitHub Release，并上传 `with-font`、`without-font` 两个 ZIP。例如，在包含该工作流的提交上创建并推送 tag：
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+生成的附件名为 `SWUFE-Thesis-v1.0.0-with-font.zip` 和 `SWUFE-Thesis-v1.0.0-without-font.zip`。工作流使用内置的 `GITHUB_TOKEN` 和 `contents: write` 权限，无需额外令牌；同一 tag 的工作流重跑时，会更新已有 Release 中同名的 ZIP。工作流打包 tag 对应的已跟踪模板文件，不在发布时重新编译论文。
+
+也可在项目根目录本地打包：
+
+```bash
+python3 scripts/package_release.py v1.0.0
+```
+
+默认输出到 `build/release/`，可通过 `--output-dir` 指定其他目录。发布打包要求六个项目字体文件完整，以确保 `with-font` 包含全部字体；`without-font` 会从相同输入中排除整个 `font/`。打包检查只需 Python 3 和 Git，可单独运行：
+
+```bash
+python3 -m unittest discover -s tests -p test_release.py -v
+```
 

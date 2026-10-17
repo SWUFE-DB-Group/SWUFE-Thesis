@@ -1,0 +1,46 @@
+name: Release template packages
+
+on:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: ${{ !github.event.deleted }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Test packaging
+        run: python3 -m unittest discover -s tests -p test_release.py -v
+
+      - name: Build both ZIP packages
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python3 scripts/package_release.py "$RELEASE_TAG" --output-dir "$RUNNER_TEMP/release"
+
+      - name: Publish release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$RUNNER_TEMP/release/"*.zip --clobber
+          else
+            gh release create "$RELEASE_TAG" "$RUNNER_TEMP/release/"*.zip \
+              --verify-tag --title "$RELEASE_TAG" --generate-notes
+          fi
