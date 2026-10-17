@@ -1,0 +1,235 @@
+% !TEX root = ../main.tex
+
+\chapter{进阶排版示例}
+\label{chap:typesetting-examples}
+
+本章展示算法、代码、矢量绘图和数学环境的写法。%
+\footnote{本章算法、程序和数据用于演示排版，实际论文应替换为自己的研究内容。}
+算法与定理的名称、编号采用 SJTUTeX 的适配；代码和图形由
+\texttt{setup.tex} 中已加载的宏包提供。
+全部示例可随论文直接编译；图表中的数值仅用于演示，不能作为实证结论。
+
+\section{算法与伪代码}
+
+\texttt{algorithm2e} 提供输入、输出、分支、循环和行号。
+算法\ref{alg:binary-search} 展示二分查找，要求输入序列已经按升序排列。
+每次迭代将候选区间缩小约一半，时间复杂度为 $O(\log n)$。
+\texttt{\textbackslash label} 紧随标题书写，正文使用
+\texttt{\textbackslash ref} 引用算法编号。
+
+\begin{algorithm}[htbp]
+  \caption{有序序列的二分查找}
+  \label{alg:binary-search}
+  \KwIn{升序序列 $A=(a_0,\ldots,a_{n-1})$，目标值 $x$}
+  \KwOut{目标值的一个下标；未找到时返回 $-1$}
+  $\ell \gets 0$，$r \gets n-1$\;
+  \While{$\ell \le r$}{
+    $m \gets \lfloor (\ell+r)/2 \rfloor$\;
+    \eIf{$a_m=x$}{
+      \KwRet $m$\;
+    }{
+      \eIf{$a_m<x$}{
+        $\ell \gets m+1$\;
+      }{
+        $r \gets m-1$\;
+      }
+    }
+  }
+  \KwRet $-1$\;
+\end{algorithm}
+
+\section{程序代码}
+
+\subsection{带行号和标题的 Python 代码}
+
+代码\ref{lst:binary-search} 是算法\ref{alg:binary-search} 的 Python 实现。
+\texttt{codeblock} 可设置语言、行号和标题，长行自动折行。
+
+\begin{codeblock}[language=Python,float=htbp,numbers=left,numberstyle=\tiny\color{black!55},numbersep=8pt,caption={二分查找的 Python 实现},label={lst:binary-search},captionpos=b]
+def binary_search(values, target):
+    """Return a matching index, or -1 when absent."""
+    left, right = 0, len(values) - 1
+    while left <= right:
+        middle = (left + right) // 2
+        if values[middle] == target:
+            return middle
+        if values[middle] < target:
+            left = middle + 1
+        else:
+            right = middle - 1
+    return -1
+
+assert binary_search([2, 5, 8, 13], 8) == 2
+assert binary_search([2, 5, 8, 13], 7) == -1
+\end{codeblock}
+
+\subsection{SQL 与行内代码}
+
+代码\ref{lst:sql-summary} 展示 SQL 聚合查询，假设
+\lstinline!transactions! 表包含客户编号和交易金额两个字段。
+行内代码可以使用 \texttt{\textbackslash lstinline}，例如
+\lstinline!SUM(amount)!。
+代码默认将美元符号等字符按原样显示；若需在注释中插入公式，可在单个代码块中设置
+\texttt{mathescape=true}，或使用 \texttt{escapeinside} 指定转义标记。
+
+\begin{codeblock}[language=SQL,caption={按客户汇总交易金额},label={lst:sql-summary},captionpos=b]
+SELECT customer_id,
+       COUNT(*) AS transaction_count,
+       SUM(amount) AS total_amount
+FROM transactions
+GROUP BY customer_id
+HAVING COUNT(*) >= 3
+ORDER BY total_amount DESC;
+\end{codeblock}
+
+代码也可以保存在独立文件中，再用以下命令引入；其中路径应替换为自己的源文件：
+
+\begin{codeblock}[language={[LaTeX]TeX}]
+\lstinputlisting[style=lstStyleCode,language=Python,
+  caption={程序标题},label={lst:my-program}]{path/to/program.py}
+\end{codeblock}
+
+\section{TikZ 流程图}
+
+TikZ 可直接绘制矢量图。图\ref{fig:tikz-training-flow} 使用相对定位、判定节点和回路，
+图中文字与论文一起排版。节点间距由 \texttt{positioning} 库控制，箭头由
+\texttt{arrows.meta} 库提供。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    >=Latex,
+    node distance=8mm and 13mm,
+    processnode/.style={draw,rounded corners=2pt,fill=blue!5,
+      minimum width=30mm,minimum height=9mm,align=center},
+    decisionnode/.style={diamond,draw,aspect=2.5,inner sep=2pt,align=center},
+    flow/.style={->,semithick}
+  ]
+    \node[processnode] (input) {读取并预处理数据};
+    \node[processnode,below=of input] (fit) {计算目标函数};
+    \node[decisionnode,below=of fit] (check) {满足停止条件？};
+    \node[processnode,right=of check] (output) {输出模型};
+    \node[processnode,below=of check] (update) {更新模型参数};
+    \draw[flow] (input) -- (fit);
+    \draw[flow] (fit) -- (check);
+    \draw[flow] (check) -- node[above] {是} (output);
+    \draw[flow] (check) -- node[right] {否} (update);
+    \draw[flow] (update.west) -- ++(-12mm,0) |- (fit.west);
+  \end{tikzpicture}
+  \caption{迭代训练流程的 TikZ 示例}
+  \label{fig:tikz-training-flow}
+\end{figure}
+
+\section{PGFPlots 数据曲线}
+
+PGFPlots 在 TikZ 基础上提供坐标轴、图例和数据曲线。
+图\ref{fig:pgfplots-loss} 直接使用示例坐标点，分别通过线型和标记区分两种方法，
+便于在黑白打印时辨认。
+实际使用时也可以用 \texttt{\textbackslash addplot table} 从数据文件读入数值。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.88\linewidth,height=5.2cm,
+      xlabel={迭代次数},ylabel={目标函数值},
+      xmin=1,xmax=6,ymin=0,ymax=1.05,
+      xtick={1,2,3,4,5,6},
+      grid=major,grid style={gray!20},
+      legend pos=north east,legend cell align=left,
+      legend style={draw=none,fill=white,font=\zihao{5}},
+      tick label style={font=\zihao{5}},
+      label style={font=\zihao{5}}
+    ]
+      \addplot[blue!65!black,thick,mark=*]
+        coordinates {(1,0.95) (2,0.65) (3,0.44) (4,0.31) (5,0.24) (6,0.20)};
+      \addlegendentry{方法 A}
+      \addplot[black!65,thick,dashed,mark=square*]
+        coordinates {(1,0.95) (2,0.76) (3,0.61) (4,0.50) (5,0.43) (6,0.38)};
+      \addlegendentry{方法 B}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{示例数据的目标函数变化曲线}
+  \label{fig:pgfplots-loss}
+\end{figure}
+
+\section{数学环境、数值与单位}
+
+\subsection{定义、定理与证明}
+
+下面用样本均值展示定义、定理与证明的交叉引用。
+
+\begin{definition}[样本均值]
+  \label{def:sample-mean}
+  对于 $n\ge1$ 个实数 $x_1,\ldots,x_n$，样本均值定义为
+  \begin{equation}
+    \bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i.
+    \label{eq:sample-mean}
+  \end{equation}
+\end{definition}
+
+\begin{theorem}[平方偏差最小化]
+  \label{thm:least-squares-mean}
+  设 $\bar{x}$ 如定义\ref{def:sample-mean} 所示。
+  对任意实数 $a$，均有
+  \begin{equation}
+    \sum_{i=1}^{n}(x_i-a)^2
+      \ge \sum_{i=1}^{n}(x_i-\bar{x})^2,
+    \label{eq:least-squares-mean}
+  \end{equation}
+  等号当且仅当 $a=\bar{x}$ 时成立。
+\end{theorem}
+
+\begin{proof}
+  根据式\eqref{eq:sample-mean}，有 $\sum_{i=1}^{n}(x_i-\bar{x})=0$，因此
+  \begin{align*}
+    \sum_{i=1}^{n}(x_i-a)^2
+      &= \sum_{i=1}^{n}\bigl[(x_i-\bar{x})+(\bar{x}-a)\bigr]^2 \\
+      &= \sum_{i=1}^{n}(x_i-\bar{x})^2+n(\bar{x}-a)^2.
+  \end{align*}
+  第二项非负，且仅当 $a=\bar{x}$ 时为零，故定理\ref{thm:least-squares-mean} 成立。
+\end{proof}
+
+\subsection{矩阵与分段函数}
+
+% bmatrix 表示矩阵，cases 表示分段定义。
+\begin{equation}
+  \boldsymbol{X}=\begin{bmatrix}
+    1 & x_1 \\
+    \vdots & \vdots \\
+    1 & x_n
+  \end{bmatrix},
+  \qquad
+  h(z)=\begin{cases}
+    z, & z\ge0, \\
+    0, & z<0.
+  \end{cases}
+  \label{eq:matrix-and-cases}
+\end{equation}
+
+\subsection{数值对齐与单位}
+
+\texttt{siunitx} 统一数值与单位的写法，例如
+\num{1234567.89}、\qty{2.5}{\milli\second} 和 \qty{95.2}{\percent}。
+表\ref{tab:numeric-results} 使用 \texttt{S} 列按小数点对齐，
+表注由 \texttt{threeparttable} 提供。
+
+\begin{table}[htbp]
+  \centering
+  \begin{threeparttable}
+    \caption{小数点对齐的结果表格示例}
+    \label{tab:numeric-results}
+    \begin{tabular}{l S[table-format=2.2] S[table-format=3.1]}
+      \toprule
+      方法 & {准确率（\%）} & {耗时（\unit{\milli\second}）} \\
+      \midrule
+      基线方法 & 89.25 & 102.4 \\
+      方法 A & 92.80 & 86.7 \\
+      方法 B\tnote{a} & 94.15 & 91.2 \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \item[a] 各列仅展示数值对齐和表注排版方式。
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}

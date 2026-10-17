@@ -49,14 +49,6 @@ tlmgr update sjtutex jsonparse
 
 两个 ZIP 均保留 `main.tex`、`setup.tex`、`swufe-layout.tex`、`config.json`、`refs.bib`、`contents/`、`figures/`、`img/`、`docs/`、使用说明和许可证。`main.tex` 位于 ZIP 根目录，可直接上传 Overleaf。ZIP 不包含示例 PDF、编译产物、测试及工作流文件；字体回退的效果及终稿使用限制见上文。
 
-### 下载模版
-
-普通用户可以直接 `clone` 或者下载压缩包。
-
-```bash
-git clone https://github.com/SWUFE-DB-Group/SWUFE-Thesis.git
-```
-
 ### Overleaf
 
 使用 Overleaf 在线编译时，请按以下步骤操作：
@@ -95,6 +87,23 @@ make wordcount                # 论文字数统计
 .\Compile.bat cleanall        # 删除 main.pdf 和所有中间文件
 .\Compile.bat wordcount       # 论文字数统计
 ```
+
+## 排版示例
+
+基础图片、子图、三线表、公式、列表和文献引用见 [`contents/绪论.tex`](contents/绪论.tex)。新增的 [`contents/排版示例.tex`](contents/排版示例.tex) 已由 `main.tex` 加载，可直接编译并查看以下效果：
+
+| 示例 | 环境或宏包 |
+| --- | --- |
+| 二分查找伪代码：输入、输出、循环、分支、行号与交叉引用 | `algorithm2e` 的 `algorithm` |
+| Python、SQL 代码块，以及行内代码和外部源文件引入命令 | `listings` 的 `codeblock`、`\lstinline`、`\lstinputlisting` |
+| 带分支和回路的训练流程图 | TikZ，含 `positioning`、`arrows.meta` |
+| 带坐标轴、图例及不同线型的示例曲线 | PGFPlots |
+| 定义、定理、证明、对齐公式、矩阵和分段函数 | SJTUTeX 与 `amsthm`、`mathtools` |
+| 数值、单位、小数点对齐表格和表注 | `siunitx`、`threeparttable` |
+
+这些示例参考 [SJTUTeX 使用说明](https://mirrors.ctan.org/macros/latex/contrib/sjtutex/sjtutex.pdf) 中的算法和数学环境功能。SJTUTeX 负责相应名称和编号的适配；代码和绘图功能通过 `setup.tex` 中显式加载的宏包提供。全部示例只需 XeLaTeX，无需 Python、Pygments、`shell-escape` 或 TikZ 外部化。表格和曲线中的数值仅用于排版演示。
+
+`codeblock` 默认自动折行，保留代码中的美元符号等字符，使用小五号等宽字体和 12 磅行距。可用 `numbers=left` 开启行号；短代码可加 `float=htbp` 作为完整浮动块，避免被拆到两页。需要在代码中嵌入 LaTeX 时，再对单个代码块开启 `mathescape`、`texcl` 或 `escapeinside`。算法、代码标题等排版参数集中在 `swufe-layout.tex`，代码配色和语法设置在 `setup.tex`。
 
 ## 论文信息配置与模式切换
 

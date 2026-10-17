@@ -399,13 +399,16 @@
 % 算法环境宏包
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 % \usepackage{algorithm, algorithmicx, algpseudocode}
+\SetKwInput{KwIn}{输入}
+\SetKwInput{KwOut}{输出}
+\SetKw{KwRet}{返回}
 
 % 代码环境宏包
 \usepackage{listings}
 \lstdefinestyle{lstStyleCode}{%
   aboveskip         = \medskipamount,
   belowskip         = \medskipamount,
-  basicstyle        = \ttfamily\zihao{-5}\setbaselineskip{12bp},
+  basicstyle        = \linespread{1}\ttfamily\zihao{-5}\setbaselineskip{12bp},
   commentstyle      = \slshape\color{black!60},
   stringstyle       = \color{green!40!black!100},
   keywordstyle      = \bfseries\color{blue!50!black},
@@ -415,15 +418,19 @@
   showstringspaces  = false,
   xleftmargin       = 1em,
   xrightmargin      = 1em,
-  breaklines        = false,
+  breaklines        = true,
+  breakatwhitespace = false,
   framexleftmargin  = 1em,
   framexrightmargin = 1em,
   backgroundcolor   = \color{gray!10},
   columns           = flexible,
   keepspaces        = true,
-  texcl             = true,
-  mathescape        = true
+  texcl             = false,
+  mathescape        = false
 }
+\renewcommand{\lstlistingname}{代码}
+\renewcommand{\lstlistlistingname}{代码索引}
+\lstset{basicstyle=\ttfamily,showstringspaces=false}
 \lstnewenvironment{codeblock}[1][]{%
   \lstset{style=lstStyleCode,#1}}{}
 
@@ -442,7 +449,7 @@
 
 % 绘图宏包
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, shapes.geometric}
+\usetikzlibrary{arrows.meta, shapes.geometric, positioning}
 \usepackage{tabularx}
 
 % 封面环境：用户在 contents/封面*.tex 中填写字段，版式统一在这里维护。

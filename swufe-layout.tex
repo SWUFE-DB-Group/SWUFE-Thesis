@@ -140,6 +140,13 @@
 \captionsetup{font=swufefigure,labelfont={},textfont={},skip=6bp}
 \captionsetup[table]{font=swufetable,position=top}
 \captionsetup*[sub]{font=swufefigure}
+\captionsetup[lstlisting]{font=swufefigure}
+
+% 算法使用五号正文及标题，行号比算法正文小一级。
+\SetAlFnt{\normalfont\songti\fontsize{10.5bp}{14bp}\selectfont}
+\SetAlCapFnt{\normalfont\heiti\fontsize{10.5bp}{14bp}\selectfont}
+\SetAlCapNameFnt{\normalfont\heiti\fontsize{10.5bp}{14bp}\selectfont}
+\SetAlgoNlRelativeSize{-1}
 
 % 普通文字与浮动图表之间各留半行；相邻浮动体的两个半行合为一行。
 \setlength{\textfloatsep}{\swufehalflineskip}
