@@ -62,6 +62,10 @@ tlmgr update sjtutex jsonparse
 
 如果你不熟悉 LaTeX 的编译流程，推荐使用下列编译工具和脚本，以自动处理交叉引用与多轮编译。编译前请满足上述版本要求。
 
+### TexLite（推荐）
+
+推荐使用 **[TexLite](https://swufe-db-group.github.io/TexLite/)** 撰写论文。TexLite 是轻量、自托管的 LaTeX 工作台，在浏览器中集成编辑、编译和 PDF 预览，并支持实时协作，使用本机或服务器上的实际 TeX 环境。欢迎访问官网了解安装和使用方法；编译本模板时，请满足上述版本要求，并选择 **XeLaTeX**。
+
 ### VSCode 用户
 
 安装 “LaTeX Workshop” 后，选择 `Recipe: latexmk (xelatex)` 编译即可，并在设置中将 `latex-workshop.latex.recipe.default` 改为 `lastUsed` 以一直使用该选项编译。
